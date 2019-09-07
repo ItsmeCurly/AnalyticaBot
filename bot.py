@@ -1,67 +1,47 @@
 import discord
+import json
+import asyncpg
 
-client = discord.Client()
+from discord.ext import commands
 
-prefix = '--'
+startup_extensions = {'cogs.prefix', 'cogs.basic', 'cogs.events', 'cogs.emoji'}
+
+prefix = '!'
 
 def read_token():
     file = open('token.txt')
     lines = file.readlines()
     return lines[0].strip()
 
-#begin async functions
+def get_prefix(bot, message):
+    if not message.guild:
+        return commands.when_mentioned_or(prefix)(bot, message)
 
-async def create_emoji(message, content):
-    pass
+    with open("prefixes.json", 'r') as file:
+        prefixes = json.load(file)
+    guild_id = str(message.guild.id)
 
-async def set_prefix(message, content):
-    file = open('valid_prefixes.txt')
-    prefixes = file.readlines()
+    if guild_id not in prefixes:
+        return commands.when_mentioned_or(prefix)(bot, message)
 
-    valid_prefix = False
+    author_id = str(message.author.id)
+    if author_id not in prefixes[guild_id]:
+        return commands.when_mentioned_or(prefix)(bot, message)
 
-    #must check in this order
-    for line in prefixes:
-        if line.strip() in content:
-            valid_prefix = True
+    all_prefix = (prefixes[str(message.guild.id)][str(message.author.id)], prefix)
 
-    if len(content) != 1 and len(content) != 2:
-        valid_prefix = False
+    return commands.when_mentioned_or(*all_prefix)(bot,message)
 
-    global prefix
-    if valid_prefix:
-        prefix = content
-        await message.channel.send("New prefix: " + content)
+bot = commands.Bot(command_prefix=get_prefix)
 
-async def get_prefix(message, content):
-    await message.channel.send(prefix)
+if __name__ == "__main__":
+    for extension in startup_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            exc = '{}: {}'.format(type(e).__name__, e)
+            print('Failed to load extension {}\n{}'.format(extension, exc))
+            continue
+        print("{} loaded.".format(extension))
 
-async def handleCommand(message):
-    print('Command: ' + message.content)
-    content = message.content[len(prefix):]
-    if content.startswith('create_emoji'):
-        await create_emoji(message, content[len('create_emoji'):])
-
-    elif content.startswith('set_prefix'):
-        await set_prefix(message, content[len('set_prefix'):].strip())
-
-    elif content.startswith('get_prefix'):
-        await get_prefix(message, content[len('get_prefix'):].strip())
-
-@client.event
-async def on_ready():
-    print('Logged on as {0}!'.format(client.user))
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if(message.content.startswith(prefix)):
-        await handleCommand(message)
-
-    ##print('Message from {0.author}: {0.content}'.format(message))
-
-    ##await channel.send('hello')
-
-client.run(read_token())
+    bot.run(read_token())
