@@ -11,13 +11,13 @@ class Data(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        connect(message, "E:\\Programs\\db", "analyticaDataPoints.db")
+        await connect(message, "E:\\Programs\\db", "analyticaDataPoints.db")
 
     @commands.command()
     async def get_recent_messages(self, ctx, amount):
-        pass
+        await recent_message_connect(ctx, "E:\\Programs\\db", "analyticaDataPoints.db", amount)
 
-def connect(message, db_loc, db_filename):
+async def connect(message, db_loc, db_filename):
     if not message.author.bot:
         conn = sqlite3.connect(db_loc + "\\" + db_filename)
         c = conn.cursor()
@@ -27,6 +27,15 @@ def connect(message, db_loc, db_filename):
 
         conn.commit()
         conn.close()
+
+async def recent_message_connect(ctx, db_loc, db_filename, amt):
+    conn = sqlite3.connect(db_loc + "\\" + db_filename)
+    c = conn.cursor()
+
+    for row_message in c.execute('SELECT * FROM messages ORDER BY id DESC LIMIT ' + amt):
+        await ctx.send(row_message)
+
+    conn.close()
 
 def setup(bot):
     bot.add_cog(Data(bot))
