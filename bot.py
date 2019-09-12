@@ -4,7 +4,7 @@ import asyncpg
 
 from discord.ext import commands
 
-startup_extensions = {'cogs.prefix', 'cogs.basic', 'cogs.events', 'cogs.emoji'}
+startup_extensions = {'cogs.prefix', 'cogs.basic', 'cogs.events', 'cogs.emoji', 'cogs.data'}
 
 prefix = '!'
 
