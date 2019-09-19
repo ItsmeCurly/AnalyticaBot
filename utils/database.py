@@ -21,7 +21,7 @@ def create_messages_table():
 
 def create_userprofiles_table():
     execute_sql_command('''CREATE TABLE userprofiles
-                ()''', commit=True)
+                (id integer primary key, userid integer, name text, avatarurl text)''', commit=True)
 
 def create_serverref_table():
     execute_sql_command('''CREATE TABLE serverref

@@ -35,6 +35,7 @@ def get_prefix(bot, message):
 bot = commands.Bot(command_prefix=get_prefix)
 
 if __name__ == "__main__":
+
     for extension in startup_extensions:
         try:
             bot.load_extension(extension)
