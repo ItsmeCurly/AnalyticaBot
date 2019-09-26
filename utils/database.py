@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 #TODO: CONFIG
-database = "E:\\Programs\\db\\analyticaDataPoints.db"
+database = "C:\\Users\\Bonnie\\Documents\\GitHub\\AnalyticaBot\\db\\analyticaDataPoints.db"
 
 def execute_sql_command(command, *, commit = False):
     conn, c = get_cursor()
@@ -30,10 +30,10 @@ def create_serverref_table():
 def del_connection(db_loc, db_filename):
     execute_sql_command('''DROP TABLE messages''', commit = True)
 
-def test_connect(db_loc, db_filename):
+def test_connect():
     conn, c = get_cursor()
 
-    for row in c.execute('SELECT * FROM messages ORDER BY id desc LIMIT 1000'):
+    for row in c.execute('SELECT * FROM messages ORDER BY id desc LIMIT 10'):
         print (row)
 
     conn.close()
@@ -47,4 +47,4 @@ def get_cursor():
     return conn, conn.cursor()
 
 if __name__ == "__main__":
-    pass
+    test_connect()

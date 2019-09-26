@@ -4,7 +4,6 @@ import sqlite3
 from datetime import datetime
 from discord.ext import commands
 
-
 class Data(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -19,7 +18,7 @@ class Data(commands.Cog):
 
 async def connect(message, db_loc, db_filename):
     if not message.author.bot:
-        conn = sqlite3.connect(db_loc + "\\" + db_filename)
+        conn = sqlite3.connect("C:\\Users\\Bonnie\\Documents\\GitHub\\AnalyticaBot\\db\\analyticaDataPoints.db")
         c = conn.cursor()
 
         c.execute('INSERT INTO messages (member, content, channel, guild, time) VALUES (?,?,?,?,?)',
@@ -29,7 +28,7 @@ async def connect(message, db_loc, db_filename):
         conn.close()
 
 async def recent_message_connect(ctx, db_loc, db_filename, amt):
-    conn = sqlite3.connect(db_loc + "\\" + db_filename)
+    conn = sqlite3.connect("C:\\Users\\Bonnie\\Documents\\GitHub\\AnalyticaBot\\db\\analyticaDataPoints.db")
     c = conn.cursor()
 
     for row_message in c.execute('SELECT * FROM messages ORDER BY id DESC LIMIT ' + amt):

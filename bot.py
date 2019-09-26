@@ -1,10 +1,9 @@
 import discord
 import json
-import asyncpg
 
 from discord.ext import commands
 
-startup_extensions = {'cogs.prefix', 'cogs.basic', 'cogs.events', 'cogs.emoji', 'cogs.data'}
+startup_extensions = {'cogs.prefix', 'cogs.basic', 'cogs.events', 'cogs.emoji', 'cogs.data', 'cogs.serverutil'}
 
 prefix = '!'
 
@@ -35,7 +34,6 @@ def get_prefix(bot, message):
 bot = commands.Bot(command_prefix=get_prefix)
 
 if __name__ == "__main__":
-
     for extension in startup_extensions:
         try:
             bot.load_extension(extension)
