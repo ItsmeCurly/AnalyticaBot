@@ -1,0 +1,17 @@
+Messages:
+
+id: auto-increment integer
+member_id: integer
+content: text
+channel: integer
+guild: integer
+time: timestamp
+
+UserProfiles:
+
+id: auto-increment integer
+user_id: integer
+user_name: text
+avatar_url: text
+last_online: timestamp
+

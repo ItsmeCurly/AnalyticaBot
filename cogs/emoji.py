@@ -11,7 +11,7 @@ class Emoji(commands.Cog):
         #ctx.send("Create_emoji")
         name = arg1
 
-        urllib.request.urlretrieve
+        #urllib.request.urlretrieve
 
 def setup(bot):
     bot.add_cog(Emoji(bot))

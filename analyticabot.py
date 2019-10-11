@@ -1,4 +1,4 @@
-""" import discord, json
+import discord, json, configparser
 from discord.ext import commands
     
 class AnalyticaBot(commands.Bot):
@@ -7,7 +7,6 @@ class AnalyticaBot(commands.Bot):
         self.startup_extensions = {'cogs.prefix', 'cogs.basic',
                                    'cogs.events', 'cogs.emoji', 'cogs.data', 'cogs.serverutil'}
         self.prefix = '!'
-        pass
     
     def init_cogs(self):
         for extension in self.startup_extensions:
@@ -47,4 +46,9 @@ class AnalyticaBot(commands.Bot):
     def run(self):
         bot = commands.Bot(command_prefix=init_prefix(self))
         bot.run(read_token())
- """
+        
+    @staticmethod
+    def read_token():
+        file = open('token.txt')
+        lines = file.readlines()
+        return lines[0].strip()
