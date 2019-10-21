@@ -26,7 +26,7 @@ class AnalyticaBot(commands.Bot):
                 continue
             print("{} loaded.".format(extension))
 
-    def init_prefix(self, message):
+    def init_prefix(self, bot, message):
         if not message.guild:
             return commands.when_mentioned_or(self.prefix)(self, message)
 

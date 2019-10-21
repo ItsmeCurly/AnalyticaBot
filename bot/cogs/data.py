@@ -1,9 +1,7 @@
 import discord
 import sqlite3
-
 from datetime import datetime
 from discord.ext import commands
-from utils.database import check_exists_table, check_table_structure
 
 class Data(commands.Cog):
     def __init__(self, bot):
