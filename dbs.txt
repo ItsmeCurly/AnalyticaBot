@@ -1,4 +1,5 @@
 Messages:
+(Stores important data on a message)
 
 id: auto-increment integer
 member_id: integer
@@ -8,6 +9,7 @@ guild: integer
 time: timestamp
 
 UserProfiles:
+(Stores user id and name for cross referencing)
 
 id: auto-increment integer
 user_id: integer
@@ -15,3 +17,12 @@ user_name: text
 avatar_url: text
 last_online: timestamp
 
+ServerRef:
+(Stores server id and name and all channels on it for cross reference)
+
+id: auto-increment integer
+guild: integer
+guildname: text
+channel: integer
+channelname: text
+last_updated: timestamp
