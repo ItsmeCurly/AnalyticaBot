@@ -13,10 +13,10 @@ def quick_execute_sql_command(command, *, commit = False):
     if commit:
         conn.commit()
     conn.close()
-    
+
 def create_messages_table():
     """creates the messages table"""
-    
+
     quick_execute_sql_command('''CREATE TABLE messages
                 (id integer primary key,
                 member integer, content text, channel integer, guild integer, time timestamp)''', commit = True)
@@ -45,13 +45,13 @@ def check_exists_table(table_name):
     conn, c = get_cursor()
 
     c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
-    
+
     group = c.fetchone()
 
     conn.close()
-    
+
     return (group != None and table_name == group[0])
-    
+
 def print_table_structure(table_name):
     conn, c = get_cursor()
 
@@ -60,7 +60,7 @@ def print_table_structure(table_name):
     print(c.fetchall())
 
     conn.close()
-    
+
 def get_table_structure(table_name):
     conn, c = get_cursor()
 
@@ -69,25 +69,29 @@ def get_table_structure(table_name):
     _list = c.fetchall()
     conn.close()
     _str = ""
-    
+
     for ele in _list:
         _str = "|".join([_str, " ".join(str(i) for i in ele)])
-    
+
     return _str
-    
+
 def check_table_structure(table_name):
     config = configparser.ConfigParser()
     config.read(CONFIG_PATH)
-    
+
     db = config['Database']
-    
+
     struc = db.get(f'struc_{table_name}')
-    
+
     if struc == None:
         raise ValueError("Config missing structure schema")
-    
-    return get_table_structure(table_name) == db.get(f'struc_{table_name}')
-    
+
+    print(struc)
+    print(get_table_structure(table_name))
+    print()
+
+    return get_table_structure(table_name) == struc
+
 def print_tables():
     conn, c = get_cursor()
 
@@ -96,10 +100,10 @@ def print_tables():
     print(c.fetchall())
 
     conn.close()
-    
+
 def get_cursor():
     conn = sqlite3.connect(database)
     return conn, conn.cursor()
 
 if __name__ == "__main__":
-    print_tables()
+    print(get_table_structure("serverref"))

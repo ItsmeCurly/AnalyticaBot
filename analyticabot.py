@@ -1,54 +1,66 @@
-import discord, json, configparser
+import discord, json, configparser, six, utils.startup as startup
 from discord.ext import commands
-    
+
+CONFIG_PATH = 'static_config.ini'
+
 class AnalyticaBot(commands.Bot):
     def __init__(self, *args, debug=False, **kwargs):
-        #super.__init__(*args,
+        commands.Bot.__init__(self, self.init_prefix)
         self.startup_extensions = {'cogs.prefix', 'cogs.basic',
-                                   'cogs.events', 'cogs.emoji', 'cogs.data', 'cogs.serverutil'}
+                                   'cogs.events', 'cogs.emoji',
+                                   'cogs.data', 'cogs.serverutil'}
         self.prefix = '!'
-    
+
+        startup.main()
+        self.init_cogs()
+
+        self._run()
+
     def init_cogs(self):
         for extension in self.startup_extensions:
             try:
                 self.load_extension(extension)
             except Exception as e:
-                exc = '{}: {}'.format(type(e).__name__, e)
-                print('Failed to load extension {}\n{}'.format(extension, exc))
+                exc = f'{type(e).__name__}: {e}'
+                print(f'Failed to load extension {extension}\n{exc}')
                 continue
             print("{} loaded.".format(extension))
 
     def init_prefix(self, message):
         if not message.guild:
-            return commands.when_mentioned_or(prefix)(self, message)
+            return commands.when_mentioned_or(self.prefix)(self, message)
 
         with open("prefixes.json", 'r') as file:
             prefixes = json.load(file)
         guild_id = str(message.guild.id)
 
         if guild_id not in prefixes:
-            return commands.when_mentioned_or(prefix)(self, message)
+            return commands.when_mentioned_or(self.prefix)(self, message)
 
         author_id = str(message.author.id)
         if author_id not in prefixes[guild_id]:
-            return commands.when_mentioned_or(prefix)(self, message)
+            return commands.when_mentioned_or(self.prefix)(self, message)
 
         all_prefix = (prefixes[str(message.guild.id)]
-                    [str(message.author.id)], prefix)
+                      [str(message.author.id)], self.prefix)
 
         return commands.when_mentioned_or(*all_prefix)(self, message)
-    def init_dbs(self):
-        pass
-    def init_token(self):
-        file = open('token.txt')
-        lines = file.readlines()
-        return lines[0].strip()
-    def run(self):
-        bot = commands.Bot(command_prefix=init_prefix(self))
-        bot.run(read_token())
-        
-    @staticmethod
-    def read_token():
-        file = open('token.txt')
-        lines = file.readlines()
-        return lines[0].strip()
+
+    def read_token(self):
+        config_path = get_config_file_at_path(CONFIG_PATH)
+
+        token_config_file_path = config_path['Files']['config_path']
+        token_config = get_config_file_at_path(token_config_file_path)
+
+        return token_config['Token']['token']
+
+    def _run(self):
+        self.run(self.read_token())
+
+def get_config_file_at_path(path: str) -> configparser:
+    cfg = configparser.ConfigParser()
+    cfg.read(path)
+    return cfg
+
+if __name__ == "__main__":
+    AnalyticaBot()
