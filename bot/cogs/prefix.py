@@ -33,7 +33,7 @@ class Prefix(commands.Cog):
         with open(prefixes_path, 'w') as f:
             json.dump(prefixes, f, indent=4)
 
-    @commands.Command
+    @commands.command()
     async def get_prefix(self, ctx):
         if not ctx.message.guild:
             pass

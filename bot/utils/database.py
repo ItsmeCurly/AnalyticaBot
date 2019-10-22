@@ -1,51 +1,71 @@
 import sqlite3, re, configparser
+from typing import List
 from sqlite3 import Error
 
-#TODO: CONFIG
-database = "db\\analyticaDataPoints.db"
-CONFIG_PATH = 'config.ini'
+#from bot.constants import database_path, config_path
 
-def quick_execute_sql_command(command, *, commit = False):
+def quick_execute_sql_command(*, command, commit = False):
     conn, c = get_cursor()
 
     c.execute(command)
 
-    if commit:
-        conn.commit()
+    (conn.commit(), None)[commit]
+    
     conn.close()
 
 def create_messages_table():
     """creates the messages table"""
 
-    quick_execute_sql_command('''CREATE TABLE messages
-                (id integer primary key,
-                member integer, content text, channel integer, guild integer, time timestamp)''', commit = True)
+    quick_execute_sql_command(
+        command='''CREATE TABLE messages 
+        (id integer primary key, 
+        member integer, 
+        content text, 
+        channel integer, 
+        guild integer, 
+        time timestamp)''', commit = True)
 
 
 def create_userprofiles_table():
     """creates the user profiles table"""
 
-    quick_execute_sql_command('''CREATE TABLE userprofiles
-                (id integer primary key, userid integer, name text, avatarurl text, last_updated timestamp, last_online timestamp)''', commit=True)
+    quick_execute_sql_command(
+        command='''CREATE TABLE userprofiles 
+        (id integer primary key, 
+        userid integer,
+        name text, 
+        guild_id integer, 
+        guild_user_name text, 
+        avatarurl text, 
+        created_at datetime, 
+        last_updated timestamp, 
+        last_online timestamp)''', commit=True)
 
 def create_serverref_table():
     """creates server reference table"""
 
-    quick_execute_sql_command('''CREATE TABLE serverref
-                (id integer primary key, guild integer, guildname text, channel integer, channelname text, last_updated timestamp, last_activity timestamp)''', commit=True)
+    quick_execute_sql_command(
+        command='''CREATE TABLE serverref
+        (id integer primary key, 
+        guild_id integer, 
+        guildname text, 
+        channel integer, 
+        channelname text, 
+        last_channel_update timestamp, 
+        last_channel_activity timestamp,
+        last_guild_update timestamp, 
+        last_guild_activity timestamp)''', commit=True)
 
-def del_connection(table_name):
-    quick_execute_sql_command(f'DROP TABLE {table_name}', commit=True)
+def del_connection(table_name: str) -> None:
+    confirm = input(f"This will delete table {table_name}, confirm? (Y/N): ")
+    
+    if confirm == 'Y' or confirm == 'y':
+        quick_execute_sql_command(command = (f'DROP TABLE {table_name}'), commit=True)
+        print(f'{table_name} deleted')
+    else:
+        return
 
-def test_connect():
-    conn, c = get_cursor()
-
-    for row in c.execute('SELECT * FROM messages ORDER BY id desc LIMIT 10'):
-        print (row)
-
-    conn.close()
-
-def check_exists_table(table_name):
+def check_exists_table(table_name: str) -> None:
     conn, c = get_cursor()
 
     c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
@@ -56,7 +76,7 @@ def check_exists_table(table_name):
 
     return (group != None and table_name == group[0])
 
-def print_table_structure(table_name):
+def print_table_structure(table_name: str) -> None:
     conn, c = get_cursor()
 
     c.execute(f"pragma table_info('{table_name}')")
@@ -64,8 +84,33 @@ def print_table_structure(table_name):
     print(c.fetchall())
 
     conn.close()
+    
+def pprint_table_structure(table_name: str) -> str:
+    conn, c = get_cursor()
+    c.execute(f"pragma table_info('{table_name}')")
 
-def get_table_structure(table_name):
+    _list_structure = c.fetchall()
+    
+    _return_str = str(_list_structure[0][1])
+    for ele in _list_structure[1:]:
+        _return_str = _return_str + " " * 16 + ele[1]
+    
+    conn.close()
+    return _return_str
+
+def pprint_table_preview(table_name: str) -> list:
+    table_structure = pprint_table_structure(table_name)
+    
+    table_structure_list = table_structure.split(" ")
+    
+    conn, c = get_cursor()
+    _str = ""
+    for row_message in c.execute(f'SELECT * FROM {table_name} ORDER BY id ASC LIMIT ' + str(5)):
+        spacing = table_structure_list[0]
+        _str = f"%{spacing}"
+    
+
+def get_table_structure(table_name: str) -> str:
     conn, c = get_cursor()
 
     c.execute(f"pragma table_info('{table_name}')")
@@ -79,9 +124,9 @@ def get_table_structure(table_name):
 
     return _str
 
-def check_table_structure(table_name):
+def check_table_structure(table_name: str) -> bool:
     config = configparser.ConfigParser()
-    config.read(CONFIG_PATH)
+    config.read(filenames = 'config.ini')
 
     db = config['Database']
 
@@ -90,20 +135,30 @@ def check_table_structure(table_name):
     if struc == None:
         raise ValueError("Config missing structure schema")
 
-    return get_table_structure(table_name) == struc
+    return get_table_structure(table_name = table_name) == struc
 
-def print_tables():
+def print_tables() -> list:
     conn, c = get_cursor()
 
     c.execute("SELECT name FROM sqlite_master WHERE type='table'")
-
-    print(c.fetchall())
-
+    
+    _to_return = c.fetchall()
+    
     conn.close()
+    return _to_return
 
-def get_cursor():
-    conn = sqlite3.connect(database)
+def get_cursor() -> (sqlite3.Connection, sqlite3.Cursor):
+    conn = sqlite3.connect(database = 'db\\analyticadatapoints.db') #database_path
     return conn, conn.cursor()
 
 if __name__ == "__main__":
-    pass
+    #del_connection(table_name='serverref')
+    #del_connection(table_name='userprofiles')
+
+    #create_serverref_table()
+    #create_userprofiles_table()
+ 
+    #print(get_table_structure(table_name='userprofiles'))
+    #print(get_table_structure(table_name='serverref'))
+
+    print(pprint_table_preview(table_name='messages'))
