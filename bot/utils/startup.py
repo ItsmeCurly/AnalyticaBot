@@ -3,7 +3,7 @@ import webbrowser
 import bot.utils.database as db
 import os
 from os import path
-from constants.py import config_path, prefixes_path, database_path
+from bot.constants import config_path, prefixes_path, database_path
 
 tables = ["messages", "serverref", "userprofiles"]
 table_creation = [db.create_messages_table, db.create_serverref_table, db.create_userprofiles_table]
@@ -46,6 +46,12 @@ def create_config(config_path):
 
     with open(config_path, 'w') as config_file:
             cfg.write(config_file)
+
+def read_token() -> str:
+    cfg = configparser.ConfigParser()
+    cfg.read('config.ini')
+
+    return cfg['Token']['token']
 
 if __name__ == "__main__":
     main()

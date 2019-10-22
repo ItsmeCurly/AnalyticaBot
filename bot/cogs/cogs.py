@@ -1,16 +1,17 @@
 import discord
-from discord.ext import commands
 
 from bot.decorators import with_roles, developer
 from bot.constants import MODERATION_ROLES
 
-class Cogs(commands.Cog):
+from discord.ext.commands import Context, command, Cog
+
+class Cogs(Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @developer()
-    @commands.command()
-    async def load_cog(self, ctx, *, extension_name: str):
+    @command()
+    async def load_cog(self, ctx: Context, *, extension_name: str) -> None:
         try:
             self.bot.load_extension('bot.cogs.' + extension_name)
         except (AttributeError, ImportError) as e:
@@ -19,17 +20,16 @@ class Cogs(commands.Cog):
         await ctx.send(f"{extension_name} loaded")
 
     @developer()
-    @commands.command()
-    async def unload_cog(self, ctx, *, extension_name: str):
+    @command()
+    async def unload_cog(self, ctx: Context, *, extension_name: str) -> None:
         self.bot.unload_extension('bot.cogs.' + extension_name)
         await ctx.send(f"{extension_name} unloaded")
 
     @developer()
-    @commands.command()
-    async def reload_cog(self, ctx, *, extension_name: str):
+    @command()
+    async def reload_cog(self, ctx: Context, *, extension_name: str) -> None:
         try:
-            self.bot.unload_extension('bot.cogs.' + extension_name)
-            self.bot.load_extension('bot.cogs.' + extension_name)
+            self.bot.reload_extension('bot.cogs.' + extension_name)
         except (AttributeError, ImportError) as e:
             await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
             return

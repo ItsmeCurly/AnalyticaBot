@@ -5,8 +5,6 @@ from bot.constants import MODERATION_ROLES, prefixes_path
 
 import json
 
-
-#TODO: GET RID OF HARD CODED VALUE HERE AND IN ALL STATEMENTS - CONFIG
 class Prefix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -54,7 +52,7 @@ class Prefix(commands.Cog):
 
         all_prefix = (prefixes[guild_id][author_id], '!')
 
-        await ctx.send(f'Your prefixes are \'{'\', \''.join(all_prefix)}\'')
+        await ctx.send(f"Your prefixes are {', '.join(all_prefix)}")
 
     @with_roles(*MODERATION_ROLES)
     @commands.command()
