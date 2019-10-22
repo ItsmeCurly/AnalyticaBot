@@ -6,7 +6,7 @@ from discord.ext import commands
 class Data(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.Cog.listener()
     async def on_ready(self):
         pass
@@ -41,4 +41,4 @@ async def recent_message_connect(ctx, amt):
 
 def setup(bot):
     bot.add_cog(Data(bot))
-    print("Loaded data")
+    print("Loaded cog: Data")

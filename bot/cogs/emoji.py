@@ -15,3 +15,4 @@ class Emoji(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Emoji(bot))
+    print("Loaded cog: Emoji")

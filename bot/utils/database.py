@@ -24,13 +24,13 @@ def create_messages_table():
 
 def create_userprofiles_table():
     """creates the user profiles table"""
-    
+
     quick_execute_sql_command('''CREATE TABLE userprofiles
                 (id integer primary key, userid integer, name text, avatarurl text, last_updated timestamp, last_online timestamp)''', commit=True)
 
 def create_serverref_table():
     """creates server reference table"""
-    
+
     quick_execute_sql_command('''CREATE TABLE serverref
                 (id integer primary key, guild integer, guildname text, channel integer, channelname text, last_updated timestamp, last_activity timestamp)''', commit=True)
 

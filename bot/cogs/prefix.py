@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from bot.decorators import with_roles
+from bot.constants import MODERATION_ROLES
 
 import json
 
@@ -36,7 +38,6 @@ class Prefix(commands.Cog):
     @commands.Command
     async def get_prefix(self, ctx):
         if not ctx.message.guild:
-            #ctx.send('Your only prefix is \'!\'')
             pass
 
         with open(r"E:\Programs\AnalyticaBot\prefixes.json", 'r') as file:
@@ -60,6 +61,7 @@ class Prefix(commands.Cog):
 
         await ctx.send('Your prefixes are \'{}\''.format('\', \''.join(all_prefix)))
 
+    @with_roles(*MODERATION_ROLES)
     @commands.command()
     async def set_server_prefix(self, ctx, *pre):
         if not ctx.message.author.guild_permissions.administrator:
@@ -112,4 +114,4 @@ class Prefix(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Prefix(bot))
-    print("Loaded prefix")
+    print("Loaded cog: Prefix")
