@@ -3,14 +3,12 @@ import webbrowser
 import bot.utils.database as db
 import os
 from os import path
+from constants.py import config_path, prefixes_path, database_path
 
 tables = ["messages", "serverref", "userprofiles"]
 table_creation = [db.create_messages_table, db.create_serverref_table, db.create_userprofiles_table]
 
 def main():
-    cfg_file = configparser.ConfigParser()
-    cfg_file.read("static_config.ini")
-    config_path = cfg_file["Files"]["config_path"]
     #create config file
 
     if not path.exists(config_path):
@@ -18,9 +16,18 @@ def main():
 
     #create dbs
 
+    if not path.exists(database_path):
+        pass
+        #create db somehow
+
     for i in range(len(tables)):
         if not db.check_exists_table(tables[i]) or not db.check_table_structure(tables[i]):
             table_creation[i]()
+
+    #create prefixes json
+    if not path.exists(prefixes_path):
+        pass
+        #create json file
 
 def create_config(config_path):
     cfg = configparser.ConfigParser()
@@ -39,11 +46,6 @@ def create_config(config_path):
 
     with open(config_path, 'w') as config_file:
             cfg.write(config_file)
-
-def read_token():
-    file = open('token.txt')
-    lines = file.readlines()
-    return lines[0].strip()
 
 if __name__ == "__main__":
     main()

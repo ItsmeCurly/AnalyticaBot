@@ -7,6 +7,8 @@ import bot.utils.startup as startup
 from bot.utils.prefix import get_prefix
 from discord.ext import commands
 
+startup.main()
+
 bot = commands.Bot(command_prefix=get_prefix,
                    case_insensitive = True,
                    activity = discord.Game("halp me"))

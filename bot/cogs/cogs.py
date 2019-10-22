@@ -8,7 +8,7 @@ class Cogs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.is_owner()
+    @developer()
     @commands.command()
     async def load_cog(self, ctx, *, extension_name: str):
         try:
@@ -18,13 +18,13 @@ class Cogs(commands.Cog):
             return
         await ctx.send(f"{extension_name} loaded")
 
-    @commands.is_owner()
+    @developer()
     @commands.command()
     async def unload_cog(self, ctx, *, extension_name: str):
         self.bot.unload_extension('bot.cogs.' + extension_name)
         await ctx.send(f"{extension_name} unloaded")
 
-    @commands.is_owner()
+    @developer()
     @commands.command()
     async def reload_cog(self, ctx, *, extension_name: str):
         try:
