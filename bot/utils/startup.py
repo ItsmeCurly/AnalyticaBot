@@ -38,7 +38,7 @@ def create_config(config_path) -> None:
 
     cfg['Database'] = {}
     dbs = cfg['Database']
-    
+
     dbs['struc_messages'] = r"""|0 id integer 0 None 1|1 member integer 0 None 0|2 content text 0 None 0|3 channel integer 0 None 0|4 guild integer 0 None 0|5 time timestamp 0 None 0"""
     dbs['struc_userprofiles'] = r"""|0 id integer 0 None 1|1 userid integer 0 None 0|2 name text 0 None 0|3 guild_id integer 0 None 0|4 guild_user_name text 0 None 0|5 avatar_url text 0 None 0|6 created_at datetime 0 None 0|7 last_updated timestamp 0 None 0|8 last_online timestamp 0 None 0"""
     dbs['struc_serverref'] = r"""|0 id integer 0 None 1|1 guild_id integer 0 None 0|2 guildname text 0 None 0|3 channel integer 0 None 0|4 channelname text 0 None 0|5 last_channel_update timestamp 0 None 0|6 last_channel_activity timestamp 0 None 0|7 last_guild_update timestamp 0 None 0|8 last_guild_activity timestamp 0 None 0"""
@@ -51,10 +51,10 @@ def read_token() -> str:
     cfg.read('config.ini')
 
     token = cfg['Token']['token']
-    
+
     if token == None:
         raise ValueError("No token supplied in config, please supply a token")
-    
+
     return cfg['Token']['token']
 
 if __name__ == "__main__":
