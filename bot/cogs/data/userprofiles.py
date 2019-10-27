@@ -24,7 +24,7 @@ def user_connect(user: discord.User) -> None:
     c = conn.cursor()
 
     c.execute('INSERT INTO userprofiles (userid, name, guild_name, guild_display_name, avatar_url, created_at, last_updated, last_online) VALUES (?,?,?,?,?,?,?,?,?)',
-              (user.id, user.name, "", user.display_name, user.avatar_url, user.created_at, ))
+              (user.id, user.name, "", user.display_name, user.avatar_url, user.created_at, datetime.now(), ))
 
     conn.close()
 
