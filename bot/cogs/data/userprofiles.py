@@ -1,11 +1,8 @@
-import discord
 import sqlite3
-
+import discord
+from discord.ext.commands import Bot, Cog, Context, command
 from bot.constants import database_path
 from datetime import datetime
-
-from discord.ext.commands import Bot, command, Cog, Context
-
 
 class UserProfiles(Cog):
     def __init__(self, bot):
@@ -13,7 +10,7 @@ class UserProfiles(Cog):
 
     @Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User) -> None:
-        pass
+        connect(after)
 
     @Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member) -> None:
@@ -28,6 +25,8 @@ def user_connect(user: discord.User) -> None:
 
     conn.close()
 
+def setup(bot: Bot) -> None:
+    pass
 def member_connect(member: discord.Member) -> None:
     conn = sqlite3.connect(database=database_path)
     c = conn.cursor()

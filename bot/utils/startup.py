@@ -1,9 +1,10 @@
 import configparser
-import webbrowser
-import bot.utils.database as db
 import os
+import webbrowser
 from os import path
-from bot.constants import config_path, prefixes_path, database_path
+
+import bot.utils.database as db
+from bot.constants import config_path, database_path, prefixes_path
 
 tables = ["messages", "serverref", "userprofiles"]
 table_creation = [db.create_messages_table, db.create_serverref_table, db.create_userprofiles_table]

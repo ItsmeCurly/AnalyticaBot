@@ -1,9 +1,11 @@
+import json
+
 import discord
 from discord.ext import commands
-from bot.decorators import with_roles
-from bot.constants import MODERATION_ROLES, prefixes_path
 
-import json
+from bot.constants import MODERATION_ROLES, prefixes_path
+from bot.decorators import with_roles
+
 
 class Prefix(commands.Cog):
     def __init__(self, bot):

@@ -1,18 +1,23 @@
-import discord
 import sqlite3
+
+import discord
+from discord.ext.commands import Bot, Cog, command
 
 from bot.constants import database_path
 
-from discord.ext.commands import Bot, command, Cog
 
 class ServerRef(Cog):
     def __init__(self, bot):
         self.bot = bot
+        
+    @Cog.listener()
+    def on_guild_channel_update(self, before: discord.abc.GuildChannel, after: discord.abc.GuildChannel):
+        connect(after)
 
     @Cog.listener
     def on_guild_join(self, guild: discord.Guild):
         pass
-
+      
 async def connect(message: discord.Message):
     conn = sqlite3.connect(database_path)
     c = conn.cursor()
