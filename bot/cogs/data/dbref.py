@@ -8,7 +8,8 @@ async def recent_message_connect(ctx: Context, table_name: str, amt: int) -> Non
     conn = sqlite3.connect(database_path)
     c = conn.cursor()
 
-    for row_message in c.execute(f'SELECT * FROM {table_name} ORDER BY id DESC LIMIT ' + amt):
+    for row_message in c.execute(f"""SELECT * FROM {table_name} ORDER BY id DESC
+                                  LIMIT """ + amt):
         await ctx.send(row_message)
 
     conn.close()

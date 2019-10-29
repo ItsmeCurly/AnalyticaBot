@@ -37,15 +37,16 @@ def create_userprofiles_table():
         name text,
         guild_id integer,
         guild_user_display_name text,
-        avatarurl text,
+        avatar_url text,
         premium_since datetime,
         status text,
         mobile_status text,
         desktop_status text,
         web_status text,
         roles text,
-        activity text,
+        activities text,
         created_at datetime,
+        joined_at datetime,
         last_updated timestamp,
         last_online timestamp,
         update_type text)''', commit=True)
@@ -69,7 +70,8 @@ def del_connection(table_name: str) -> None:
     confirm = input(f"This will delete table {table_name}, confirm? (Y/N): ")
 
     if confirm == 'Y' or confirm == 'y':
-        quick_execute_sql_command(command = (f'DROP TABLE {table_name}'), commit=True)
+        quick_execute_sql_command(command = (f'DROP TABLE {table_name}'), 
+                                  commit=True)
         print(f'{table_name} deleted')
     else:
         return
@@ -77,7 +79,8 @@ def del_connection(table_name: str) -> None:
 def check_exists_table(table_name: str) -> None:
     conn, c = get_cursor()
 
-    c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+    c.execute(f"""SELECT name FROM sqlite_master WHERE type='table' AND name=
+              '{table_name}'""")
 
     group = c.fetchone()
 
@@ -114,7 +117,8 @@ def pprint_table_preview(table_name: str) -> list:
 
     conn, c = get_cursor()
     _str = ""
-    for row_message in c.execute(f'SELECT * FROM {table_name} ORDER BY id ASC LIMIT ' + str(5)):
+    for row_message in c.execute(f"""SELECT * FROM {table_name} ORDER BY id ASC 
+                                 LIMIT """ + str(5)):
         spacing = table_structure_list[0]
         _str = f"%{spacing}"
 
@@ -163,6 +167,7 @@ def get_cursor() -> (sqlite3.Connection, sqlite3.Cursor):
     return conn, conn.cursor()
 
 if __name__ == "__main__":
+    pass
     #del_connection(table_name='serverref')
     #del_connection(table_name='userprofiles')
 
@@ -171,5 +176,5 @@ if __name__ == "__main__":
 
     #print(get_table_structure(table_name='userprofiles'))
     #print(get_table_structure(table_name='serverref'))
-    print(pprint_table_preview(table_name='messages')
-    print(pprint_table_structure(table_name='userprofiles'))
+    #print(pprint_table_preview(table_name='messages'))
+    #print(pprint_table_structure(table_name='userprofiles'))

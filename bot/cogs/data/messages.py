@@ -16,7 +16,7 @@ class Messages(Cog):
         
     @Cog.listener()
     async def on_message(self, msg: discord.Message):
-        connect(msg)
+        await connect(msg)
         
     @command()
     async def message_get_last(self, ctx: Context, *, amt: int) -> None :
@@ -32,8 +32,10 @@ async def connect(message: discord.Message):
         conn = sqlite3.connect(database_path)
         c = conn.cursor()
 
-        c.execute('INSERT INTO messages (member, content, channel, guild, time) VALUES (?,?,?,?,?)',
-                  (message.author.id, message.content, message.channel.id, message.guild.id, datetime.now()))
+        c.execute("""INSERT INTO messages (member, content, channel, guild, 
+                  time) VALUES (?,?,?,?,?)""", 
+                  [message.author.id, message.content, message.channel.id, 
+                   message.guild.id, datetime.now()])
 
         conn.commit()
         conn.close()

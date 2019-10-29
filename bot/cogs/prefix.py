@@ -48,7 +48,8 @@ class Prefix(commands.Cog):
             await ctx.send('Your only prefix is \'!\'')
 
         author_id = str(ctx.message.author.id)
-        if author_id not in prefixes[guild_id] or prefixes[guild_id][author_id] == '!':
+        if (author_id not in prefixes[guild_id] or 
+            prefixes[guild_id][author_id] == '!'):
             await ctx.send('Your only prefix is \'!\'')
             return
 

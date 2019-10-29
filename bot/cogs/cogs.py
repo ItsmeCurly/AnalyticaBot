@@ -12,11 +12,7 @@ class Cogs(Cog):
     @developer()
     @command()
     async def load_cog(self, ctx: Context, *, extension_name: str) -> None:
-        try:
-            self.bot.load_extension('bot.cogs.' + extension_name)
-        except (AttributeError, ImportError) as e:
-            await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            return
+        self.bot.load_extension('bot.cogs.' + extension_name)
         await ctx.send(f"{extension_name} loaded")
 
     @developer()
@@ -28,11 +24,7 @@ class Cogs(Cog):
     @developer()
     @command()
     async def reload_cog(self, ctx: Context, *, extension_name: str) -> None:
-        try:
-            self.bot.reload_extension('bot.cogs.' + extension_name)
-        except (AttributeError, ImportError) as e:
-            await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            return
+        self.bot.reload_extension('bot.cogs.' + extension_name)
         await ctx.send(f"{extension_name} reloaded")
 
 def setup(bot):

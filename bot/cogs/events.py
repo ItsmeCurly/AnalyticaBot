@@ -10,7 +10,7 @@ class Events(commands.Cog):
         print(f'Logged on as {self.bot.user}!')
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
             return
 

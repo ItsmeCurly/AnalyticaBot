@@ -10,9 +10,9 @@ class Basic(commands.Cog):
 
     @developer()
     @commands.command()
-    async def test(self, ctx):
+    async def test(self, ctx: commands.Context):
         print("Test2")
-        await ctx.send("Test2")
+        await ctx.send(ctx.author.status)
 
 
 def setup(bot):

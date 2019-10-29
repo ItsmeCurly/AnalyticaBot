@@ -33,12 +33,8 @@ class ServerUtil(commands.Cog):
     @with_roles(MODERATION_ROLES)
     @commands.command()
     async def prune_members(self, ctx, _days: int):
-        if not is_admin(ctx.author) and is_owner(ctx.author):
-            await ctx.channel.send(f"Only admins can call this role: {ctx.author.guild_permissions}")
-            return
         estimate_prune = await ctx.guild.estimate_pruned_members(days = _days)
         await ctx.channel.send(f"Estimated prune members: {estimate_prune}")
-
 
 def setup(bot):
     bot.add_cog(ServerUtil(bot))
