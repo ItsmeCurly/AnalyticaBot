@@ -10,19 +10,19 @@ def quick_execute_sql_command(*, command, commit = False):
     c.execute(command)
 
     (conn.commit(), None)[commit]
-    
+
     conn.close()
     
 def create_messages_table():
     """creates the messages table"""
 
     quick_execute_sql_command(
-        command='''CREATE TABLE messages 
-        (id integer primary key, 
-        member integer, 
-        content text, 
-        channel integer, 
-        guild integer, 
+        command='''CREATE TABLE messages
+        (id integer primary key,
+        member integer,
+        content text,
+        channel integer,
+        guild integer,
         time timestamp)''', commit = True)
 
 
@@ -30,35 +30,44 @@ def create_userprofiles_table():
     """creates the user profiles table"""
 
     quick_execute_sql_command(
-        command='''CREATE TABLE userprofiles 
-        (id integer primary key, 
+        command='''CREATE TABLE userprofiles
+        (id integer primary key,
         userid integer,
-        name text, 
-        guild_id integer, 
-        guild_user_name text, 
-        avatarurl text, 
-        created_at datetime, 
-        last_updated timestamp, 
-        last_online timestamp)''', commit=True)
+        discriminator integer,
+        name text,
+        guild_id integer,
+        guild_user_display_name text,
+        avatarurl text,
+        premium_since datetime,
+        status text,
+        mobile_status text,
+        desktop_status text,
+        web_status text,
+        roles text,
+        activity text,
+        created_at datetime,
+        last_updated timestamp,
+        last_online timestamp,
+        update_type text)''', commit=True)
 
 def create_serverref_table():
     """creates server reference table"""
 
     quick_execute_sql_command(
         command='''CREATE TABLE serverref
-        (id integer primary key, 
-        guild_id integer, 
-        guildname text, 
-        channel integer, 
-        channelname text, 
-        last_channel_update timestamp, 
+        (id integer primary key,
+        guild_id integer,
+        guildname text,
+        channel integer,
+        channelname text,
+        last_channel_update timestamp,
         last_channel_activity timestamp,
-        last_guild_update timestamp, 
+        last_guild_update timestamp,
         last_guild_activity timestamp)''', commit=True)
 
 def del_connection(table_name: str) -> None:
     confirm = input(f"This will delete table {table_name}, confirm? (Y/N): ")
-    
+
     if confirm == 'Y' or confirm == 'y':
         quick_execute_sql_command(command = (f'DROP TABLE {table_name}'), commit=True)
         print(f'{table_name} deleted')
@@ -84,31 +93,33 @@ def print_table_structure(table_name: str) -> None:
     print(c.fetchall())
 
     conn.close()
-    
+
 def pprint_table_structure(table_name: str) -> str:
     conn, c = get_cursor()
     c.execute(f"pragma table_info('{table_name}')")
 
     _list_structure = c.fetchall()
-    
+
     _return_str = str(_list_structure[0][1])
     for ele in _list_structure[1:]:
         _return_str = _return_str + " " * 16 + ele[1]
-    
+
     conn.close()
     return _return_str
 
 def pprint_table_preview(table_name: str) -> list:
     table_structure = pprint_table_structure(table_name)
-    
+
     table_structure_list = table_structure.split(" ")
-    
+
     conn, c = get_cursor()
     _str = ""
     for row_message in c.execute(f'SELECT * FROM {table_name} ORDER BY id ASC LIMIT ' + str(5)):
         spacing = table_structure_list[0]
         _str = f"%{spacing}"
-    
+
+    conn.close()
+
 
 def get_table_structure(table_name: str) -> str:
     conn, c = get_cursor()
@@ -141,9 +152,9 @@ def print_tables() -> list:
     conn, c = get_cursor()
 
     c.execute("SELECT name FROM sqlite_master WHERE type='table'")
-    
+
     _to_return = c.fetchall()
-    
+
     conn.close()
     return _to_return
 
@@ -157,8 +168,8 @@ if __name__ == "__main__":
 
     #create_serverref_table()
     #create_userprofiles_table()
- 
+
     #print(get_table_structure(table_name='userprofiles'))
     #print(get_table_structure(table_name='serverref'))
-
-    print(pprint_table_preview(table_name='messages'))
+    print(pprint_table_preview(table_name='messages')
+    print(pprint_table_structure(table_name='userprofiles'))

@@ -4,6 +4,7 @@ import configparser
 import six
 import bot.utils.startup as startup
 
+
 from bot.utils.prefix import get_prefix
 from discord.ext import commands
 
