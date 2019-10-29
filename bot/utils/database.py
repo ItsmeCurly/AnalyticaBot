@@ -1,6 +1,6 @@
-import sqlite3, re, configparser
-from typing import List
-from sqlite3 import Error
+import configparser
+import re
+import sqlite3
 
 #from bot.constants import database_path, config_path
 
@@ -12,7 +12,7 @@ def quick_execute_sql_command(*, command, commit = False):
     (conn.commit(), None)[commit]
     
     conn.close()
-
+    
 def create_messages_table():
     """creates the messages table"""
 

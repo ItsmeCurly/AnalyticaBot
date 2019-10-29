@@ -1,9 +1,9 @@
-import discord
 import sqlite3
 
-from bot.constants import database_path
+import discord
+from discord.ext.commands import Bot, Cog, Context, command
 
-from discord.ext.commands import Bot, command, Cog, Context
+from bot.constants import database_path
 
 
 class UserProfiles(Cog):
@@ -12,7 +12,7 @@ class UserProfiles(Cog):
 
     @Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User) -> None:
-        pass
+        connect(after)
 
 def connect(update: discord.User) -> None:
     conn = sqlite3.connect(database = database_path)
@@ -22,9 +22,6 @@ def connect(update: discord.User) -> None:
 
     conn.close()
 
-def setup(bot):
+def setup(bot: Bot) -> None:
     bot.add_cog(UserProfiles(bot))
     print("Loaded cog: Data.UserProfiles")
-
-
-
