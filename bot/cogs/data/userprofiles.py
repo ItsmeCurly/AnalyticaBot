@@ -20,7 +20,6 @@ class UserProfiles(Cog):
     @Cog.listener()
     async def on_member_update(self, before: discord.Member,
                                after: discord.Member) -> None:
-        #print(compare_changes(before, after))
         member_update_connect(after)
 
     @Cog.listener()

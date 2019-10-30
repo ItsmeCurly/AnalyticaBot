@@ -19,11 +19,18 @@ def create_messages_table():
     quick_execute_sql_command(
         command='''CREATE TABLE messages
         (id integer primary key,
-        member integer,
+        message_id integer,
+        member_id integer,
         content text,
-        channel integer,
-        guild integer,
-        time timestamp)''', commit = True)
+        channel_id integer,
+        guild_id integer,
+        embeds text,
+        attachments text,
+        reactions text,
+        time timestamp,
+        edited integer,
+        last_edited_at timestamp,
+        message_type text)''', commit = True)
 
 
 def create_userprofiles_table():
@@ -49,7 +56,8 @@ def create_userprofiles_table():
         joined_at datetime,
         last_updated timestamp,
         last_online timestamp,
-        update_type text)''', commit=True)
+        update_type text,
+        possible_change text)''', commit=True)
 
 def create_serverref_table():
     """creates server reference table"""
@@ -151,6 +159,9 @@ def check_table_structure(table_name: str) -> bool:
         raise ValueError("Config missing structure schema")
 
     return get_table_structure(table_name = table_name) == struc
+
+def alter_table(table: str):
+    pass
 
 def print_tables() -> list:
     conn, c = get_cursor()

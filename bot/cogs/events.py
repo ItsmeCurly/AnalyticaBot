@@ -14,7 +14,7 @@ class Events(commands.Cog):
         if message.author == self.bot.user:
             return
 
-        print(f'Message from {message.author}: {message.content}')
+        print(f'Message from {message.author}: {message.content}{message.attachments}')
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
