@@ -13,24 +13,24 @@ class UserProfiles(Cog):
         self.bot = bot
 
     @Cog.listener()
-    async def on_user_update(self, before: discord.User, 
+    async def on_user_update(self, before: discord.User,
                              after: discord.User) -> None:
         user_update_connect(after)
 
     @Cog.listener()
-    async def on_member_update(self, before: discord.Member, 
+    async def on_member_update(self, before: discord.Member,
                                after: discord.Member) -> None:
         #print(compare_changes(before, after))
         member_update_connect(after)
-        
+
     @Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
         member_join_connect(member)
-        
+
     @Cog.listener()
     async def on_member_leave(self, member: discord.Member) -> None:
         member_leave_connect(member)
-        
+
     @command()
     async def full_update(self, ctx: Context) -> None:
         for member in ctx.message.guild.members:
@@ -46,7 +46,7 @@ def user_update_connect(user: discord.User) -> None:
         joined_at=None,
         update_type='USER_UPDATE'
     )
-    
+
 def full_update_connect(member: discord.Member) -> None:
     connect(
         userid=member.id,
@@ -66,7 +66,7 @@ def full_update_connect(member: discord.Member) -> None:
         joined_at=member.joined_at,
         update_type='FULL_MEMBER_UPDATE'
     )
-    
+
 def member_update_connect(member: discord.Member) -> None:
     connect(
         userid=member.id,
@@ -126,36 +126,36 @@ def member_leave_connect(member: discord.Member) -> None:
         joined_at=member.joined_at,
         update_type='MEMBER_LEAVE'
     )
-    
-def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1, 
-            guild_user_display_name:str = "", avatar_url:str, 
-            premium_since:datetime = None, status=None, mobile_status=None, 
-            desktop_status=None, web_status=None, roles=None, activities, 
+
+def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
+            guild_user_display_name:str = "", avatar_url:str,
+            premium_since:datetime = None, status=None, mobile_status=None,
+            desktop_status=None, web_status=None, roles=None, activities,
             created_at, joined_at, last_updated=datetime.now(), last_online=
-            datetime.now(), update_type: str): 
-    """Helper function to connect to database, passed with many parameters to 
+            datetime.now(), update_type: str):
+    """Helper function to connect to database, passed with many parameters to
     supplement a large query"""
-    
+
     conn = sqlite3.connect(database=database_path)
     c = conn.cursor()
-    
-    """
+
+
     _pp = pprint.PrettyPrinter(indent=4)
     _pp.pprint([userid, discriminator, name, guild_id, guild_user_display_name,
            avatar_url, premium_since, status, mobile_status, desktop_status,
            web_status, roles, activities, created_at, joined_at,
-           last_updated, last_online, update_type]) """
-    
-    c.execute("""INSERT INTO userprofiles(userid, discriminator, name, guild_id, 
-              guild_user_display_name, avatar_url, premium_since, status, 
-              mobile_status, desktop_status, web_status, roles, activities, 
-              created_at, joined_at, last_updated, last_online, update_type) 
+           last_updated, last_online, update_type])
+
+    c.execute("""INSERT INTO userprofiles(userid, discriminator, name, guild_id,
+              guild_user_display_name, avatar_url, premium_since, status,
+              mobile_status, desktop_status, web_status, roles, activities,
+              created_at, joined_at, last_updated, last_online, update_type)
               VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-              [userid, discriminator, name, guild_id, guild_user_display_name, 
-               avatar_url, premium_since, status, mobile_status, desktop_status, 
-               web_status, roles, activities, created_at, joined_at, 
+              [userid, discriminator, name, guild_id, guild_user_display_name,
+               avatar_url, premium_since, status, mobile_status, desktop_status,
+               web_status, roles, activities, created_at, joined_at,
                last_updated, last_online, update_type])
-    
+
     conn.close()
 
 def get_status(status: discord.Status):
