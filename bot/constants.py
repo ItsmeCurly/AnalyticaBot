@@ -4,6 +4,9 @@ DEFAULT_PREFIX = '!'
 
 MODERATION_ROLES = 'administrator', 'manage_guild'
 
-config_path = r'config.ini'
-prefixes_path = r'prefixes.json'
-database_path = r'db\\analyticaDataPoints.db'
+CONFIG_PATH = r'config.ini'
+PREFIXES_PATH = r'prefixes.json'
+DATABASE_PATH = r'db\\analyticaDataPoints.db'
+
+ACCEPTORS = ['y', 'yes', 'yay', 'ye', 'yeah', 'yea']
+DENIERS = ['n', 'no', 'nah', 'na', 'nay']

@@ -3,7 +3,7 @@ import sqlite3
 import discord
 from discord.ext.commands import Bot, Cog, command
 
-from bot.constants import database_path
+from bot.constants import DATABASE_PATH
 
 class ServerRef(Cog):
     def __init__(self, bot):
@@ -19,7 +19,7 @@ class ServerRef(Cog):
         pass
       
 async def connect(message: discord.Message):
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(DATABASE_PATH)
     c = conn.cursor()
 
     c.execute(sql="""INSERT INTO serverref (guild_id, guild_name, channel, 

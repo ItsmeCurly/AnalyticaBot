@@ -13,7 +13,8 @@ class Events(commands.Cog):
     async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
             return
-
+        if not message.guild:
+            print('Direct ', end = "")
         print(f'Message from {message.author}: {message.content}{message.attachments}')
 
     @commands.Cog.listener()

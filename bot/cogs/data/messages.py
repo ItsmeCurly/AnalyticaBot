@@ -5,7 +5,7 @@ import discord
 from discord.ext.commands import Bot, Cog, Context, command
 
 from bot.cogs.data.dbref import recent_message_connect
-from bot.constants import database_path
+from bot.constants import DATABASE_PATH
 from bot.decorators import developer
 from bot.utils.database import print_table_structure
 
@@ -29,13 +29,23 @@ class Messages(Cog):
     
 async def connect(message: discord.Message):
     if not message.author.bot:
-        conn = sqlite3.connect(database_path)
+        conn = sqlite3.connect(DATABASE_PATH)
         c = conn.cursor()
 
-        c.execute("""INSERT INTO messages (member, content, channel, guild, 
-                  time) VALUES (?,?,?,?,?)""", 
-                  [message.author.id, message.content, message.channel.id, 
-                   message.guild.id, datetime.now()])
+        c.execute("""INSERT INTO messages (
+            member, 
+            content, 
+            channel, 
+            guild, 
+            time
+            ) VALUES (?,?,?,?,?)""", 
+            [
+                message.author.id, 
+                message.content, 
+                message.channel.id, 
+                message.guild.id if message.guild else -1, 
+                datetime.now()
+            ])
 
         conn.commit()
         conn.close()

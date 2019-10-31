@@ -5,7 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot.constants import database_path
+from bot.constants import DATABASE_PATH
 
 
 class UserProfiles(Cog):
@@ -135,9 +135,9 @@ def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
     """Helper function to connect to database, passed with many parameters to
     supplement a large query"""
 
-    conn = sqlite3.connect(database=database_path)
+    conn = sqlite3.connect(database=DATABASE_PATH)
     c = conn.cursor()
-
+    
 
     _pp = pprint.PrettyPrinter(indent=4)
     _pp.pprint([userid, discriminator, name, guild_id, guild_user_display_name,
@@ -145,16 +145,48 @@ def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
            web_status, roles, activities, created_at, joined_at,
            last_updated, last_online, update_type])
 
-    c.execute("""INSERT INTO userprofiles(userid, discriminator, name, guild_id,
-              guild_user_display_name, avatar_url, premium_since, status,
-              mobile_status, desktop_status, web_status, roles, activities,
-              created_at, joined_at, last_updated, last_online, update_type)
-              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-              [userid, discriminator, name, guild_id, guild_user_display_name,
-               avatar_url, premium_since, status, mobile_status, desktop_status,
-               web_status, roles, activities, created_at, joined_at,
-               last_updated, last_online, update_type])
-
+    c.execute("""INSERT INTO userprofiles(   
+            userid, 
+            discriminator, 
+            name, 
+            guild_id, 
+            guild_user_display_name, 
+            avatar_url, 
+            premium_since, 
+            status, 
+            mobile_status, 
+            desktop_status, 
+            web_status, 
+            roles, 
+            activities,
+            created_at, 
+            joined_at, 
+            last_updated, 
+            last_online, 
+            update_type
+            )
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            [
+                userid, 
+                discriminator, 
+                name, 
+                guild_id, 
+                guild_user_display_name,
+                avatar_url, 
+                premium_since, 
+                status, 
+                mobile_status, 
+                desktop_status,
+                web_status, 
+                roles, 
+                activities, 
+                created_at, 
+                joined_at,
+                last_updated,
+                last_online, 
+                update_type
+            ])
+    conn.commit()
     conn.close()
 
 def get_status(status: discord.Status):

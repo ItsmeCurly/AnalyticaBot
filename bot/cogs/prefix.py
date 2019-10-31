@@ -3,7 +3,7 @@ import json
 import discord
 from discord.ext import commands
 
-from bot.constants import MODERATION_ROLES, prefixes_path
+from bot.constants import MODERATION_ROLES, PREFIXES_PATH
 from bot.decorators import with_roles
 
 
@@ -18,7 +18,7 @@ class Prefix(commands.Cog):
 
         pref = pre[0]
 
-        with open(prefixes_path, 'r') as f:
+        with open(PREFIXES_PATH, 'r') as f:
             prefixes = json.load(f)
         guild_id = str(ctx.guild.id)
 
@@ -32,7 +32,7 @@ class Prefix(commands.Cog):
 
         await ctx.send(f"New prefix is '{pref}'")
 
-        with open(prefixes_path, 'w') as f:
+        with open(PREFIXES_PATH, 'w') as f:
             json.dump(prefixes, f, indent=4)
 
     @commands.command()
@@ -40,7 +40,7 @@ class Prefix(commands.Cog):
         if not ctx.message.guild:
             pass
 
-        with open(prefixes_path, 'r') as file:
+        with open(PREFIXES_PATH, 'r') as file:
             prefixes = json.load(file)
         guild_id = str(ctx.message.guild.id)
 
@@ -66,7 +66,7 @@ class Prefix(commands.Cog):
 
         pref = pre[0]
 
-        with open(prefixes_path, 'r') as f:
+        with open(PREFIXES_PATH, 'r') as f:
             prefixes = json.load(f)
         guild_id = str(ctx.guild.id)
 
@@ -82,12 +82,12 @@ class Prefix(commands.Cog):
         prefixes[guild_id] = guild_prefixes
         await ctx.send(f"New prefix for the server is '{pref}'")
 
-        with open(prefixes_path, 'w') as f:
+        with open(PREFIXES_PATH, 'w') as f:
             json.dump(prefixes, f, indent=4)
 
     @commands.command()
     async def reset_prefix(self, ctx):
-        with open(prefixes_path, 'r') as f:
+        with open(PREFIXES_PATH, 'r') as f:
             prefixes = json.load(f)
         guild_id = str(ctx.guild.id)
 
@@ -101,7 +101,7 @@ class Prefix(commands.Cog):
 
         await ctx.send("Prefix reset back to \'!\'")
 
-        with open(prefixes_path, 'w') as f:
+        with open(PREFIXES_PATH, 'w') as f:
             json.dump(prefixes, f, indent=4)
 
 def setup(bot):

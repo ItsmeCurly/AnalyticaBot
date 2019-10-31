@@ -1,6 +1,6 @@
 import configparser
 
-from bot.constants import config_path
+from bot.constants import CONFIG_PATH
 
 def create_config():
     cfg = configparser.ConfigParser()
@@ -17,5 +17,5 @@ def create_config():
     dbs['struc_userprofiles'] = r"""|0 id integer 0 None 1|1 userid integer 0 None 0|2 name text 0 None 0|3 avatarurl text 0 None 0|4 last_updated timestamp 0 None 0|5 last_online timestamp 0 None 0"""
     dbs['struc_serverref'] = r"""|0 id integer 0 None 1|1 guild integer 0 None 0|2 guildname text 0 None 0|3 channel integer 0 None 0|4 channelname text 0 None 0|5 last_updated timestamp 0 None 0|6 last_activity timestamp 0 None 0"""
 
-    with open(config_path, 'w') as config_file:
+    with open(CONFIG_PATH, 'w') as config_file:
         cfg.write(config_file)
