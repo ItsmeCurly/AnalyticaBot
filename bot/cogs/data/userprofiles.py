@@ -139,11 +139,11 @@ def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
     c = conn.cursor()
     
 
-    _pp = pprint.PrettyPrinter(indent=4)
+    """ _pp = pprint.PrettyPrinter(indent=4)
     _pp.pprint([userid, discriminator, name, guild_id, guild_user_display_name,
            avatar_url, premium_since, status, mobile_status, desktop_status,
            web_status, roles, activities, created_at, joined_at,
-           last_updated, last_online, update_type])
+           last_updated, last_online, update_type]) """
 
     c.execute("""INSERT INTO userprofiles(   
             userid, 

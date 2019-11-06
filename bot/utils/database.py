@@ -4,13 +4,14 @@ import sqlite3
 
 #from bot.constants import database_path, config_path
 
+DATABASE_PATH = 'db\\analyticadatapoints.db'
+
 def quick_execute_sql_command(*, command, commit = False):
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         c.execute(command)
         
         conn.commit() if commit else None
-
-        conn.close()
     
 def create_messages_table():
     """creates the messages table"""
@@ -31,7 +32,6 @@ def create_messages_table():
             reactions text,
             time timestamp,
             edited integer,
-            last_edited_at timestamp,
             message_type text
         )""", commit = True)
 
@@ -96,7 +96,8 @@ def del_connection(table_name: str) -> None:
         return
 
 def check_exists_table(table_name: str) -> None:
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         c.execute(f"""
                 SELECT
                     name 
@@ -110,13 +111,15 @@ def check_exists_table(table_name: str) -> None:
         return (group != None and table_name == group[0])
 
 def print_table_structure(table_name: str) -> None:
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         c.execute(f"pragma table_info('{table_name}')")
 
         print(c.fetchall())
 
 def pprint_table_structure(table_name: str) -> str:
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         c.execute(f"pragma table_info('{table_name}')")
 
         _list_structure = c.fetchall()
@@ -132,7 +135,8 @@ def pprint_table_preview(table_name: str) -> list:
 
     table_structure_list = table_structure.split(" ")
 
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         _str = ""
         for row_message in c.execute(f"""SELECT * FROM {table_name} ORDER BY id ASC 
                                     LIMIT """ + str(5)):
@@ -141,7 +145,8 @@ def pprint_table_preview(table_name: str) -> list:
 
 
 def get_table_structure(table_name: str) -> str:
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
 
         c.execute(f"pragma table_info('{table_name}')")
 
@@ -170,7 +175,8 @@ def alter_table(table: str):
     pass
 
 def print_tables() -> list:
-    with get_cursor() as (conn, c):
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        c = conn.cursor()
         c.execute("SELECT name FROM sqlite_master WHERE type='table'")
 
         _to_return = c.fetchall()
@@ -185,11 +191,15 @@ if __name__ == "__main__":
     pass
     #del_connection(table_name='serverref')
     #del_connection(table_name='userprofiles')
+    #del_connection(table_name='messages')
 
     #create_serverref_table()
     #create_userprofiles_table()
+    #create_messages_table()
 
     #print(get_table_structure(table_name='userprofiles'))
     #print(get_table_structure(table_name='serverref'))
+    #print(get_table_structure(table_name='messages'))
+    
     #print(pprint_table_preview(table_name='messages'))
     #print(pprint_table_structure(table_name='userprofiles'))
