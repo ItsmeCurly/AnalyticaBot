@@ -15,28 +15,28 @@ class DbFuncs(Cog):
         self.bot = bot
         self.waiting_delete_table = False
         self.table_name = ""
-        
-    @Cog.listener()    
+
+    @Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.content.lower() in ACCEPTORS:
             if self.waiting_delete_table:
                 delete_table_func(self.table_name)
                 self.waiting_delete_table = False
                 self.table_name = ""
-                await message.channel.send(f"Successfully deleted table {table_name}")
-                
+                await message.channel.send(f"Successfully deleted table {self.table_name}")
+
         elif message.content.lower() in DENIERS:
             if self.waiting_delete_table:
                 self.waiting_delete_table = False
                 self.table_name = ""
-        
+
     @command()
     @developer()
     async def delete_table(self, ctx: Context, table_name:str) -> None:
         self.waiting_delete_table = True
         self.table_name = table_name
         await ctx.send(f"Would you like to delete {table_name}? (Y/N)")
-    
+
     @command()
     @developer()
     async def create_table(self, ctx: Context, table_name: str) -> None:
@@ -48,7 +48,7 @@ class DbFuncs(Cog):
 
 def delete_table_func(table_name):
     """Function to delete the table after the user has accepted the prompt"""
-    
+
     conn = sqlite3.connect(DATABASE_PATH)
     c = conn.cursor()
 

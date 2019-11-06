@@ -15,7 +15,7 @@ class Events(commands.Cog):
             return
         if not message.guild:
             print('Direct ', end = "")
-        print(f'Message from {message.author}: {message.content}{message.attachments}')
+        print(f'Message from {message.author}: {message.content}')
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

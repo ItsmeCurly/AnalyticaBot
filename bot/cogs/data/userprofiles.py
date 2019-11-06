@@ -6,6 +6,7 @@ import discord
 from discord.ext.commands import Bot, Cog, Context, command
 
 from bot.constants import DATABASE_PATH
+from bot.cogs.data.dbref import recent_message_connect
 
 
 class UserProfiles(Cog):
@@ -29,6 +30,10 @@ class UserProfiles(Cog):
     @Cog.listener()
     async def on_member_leave(self, member: discord.Member) -> None:
         member_leave_connect(member)
+
+    @command()
+    async def userprofiles_get_last(self, ctx: Context, amt: int) -> None:
+        await recent_message_connect(ctx, 'userprofiles', amt)
 
     @command()
     async def full_update(self, ctx: Context) -> None:
@@ -131,63 +136,55 @@ def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
             premium_since:datetime = None, status=None, mobile_status=None,
             desktop_status=None, web_status=None, roles=None, activities,
             created_at, joined_at, last_updated=datetime.now(), last_online=
-            datetime.now(), update_type: str):
+            datetime.now(), update_type: str) -> None:
     """Helper function to connect to database, passed with many parameters to
     supplement a large query"""
 
-    conn = sqlite3.connect(database=DATABASE_PATH)
-    c = conn.cursor()
-    
+    with sqlite3.connect(database=DATABASE_PATH) as conn:
+        c = conn.cursor()
 
-    """ _pp = pprint.PrettyPrinter(indent=4)
-    _pp.pprint([userid, discriminator, name, guild_id, guild_user_display_name,
-           avatar_url, premium_since, status, mobile_status, desktop_status,
-           web_status, roles, activities, created_at, joined_at,
-           last_updated, last_online, update_type]) """
-
-    c.execute("""INSERT INTO userprofiles(   
-            userid, 
-            discriminator, 
-            name, 
-            guild_id, 
-            guild_user_display_name, 
-            avatar_url, 
-            premium_since, 
-            status, 
-            mobile_status, 
-            desktop_status, 
-            web_status, 
-            roles, 
-            activities,
-            created_at, 
-            joined_at, 
-            last_updated, 
-            last_online, 
-            update_type
-            )
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-            [
-                userid, 
-                discriminator, 
-                name, 
-                guild_id, 
+        c.execute("""INSERT INTO userprofiles(
+                userid,
+                discriminator,
+                name,
+                guild_id,
                 guild_user_display_name,
-                avatar_url, 
-                premium_since, 
-                status, 
-                mobile_status, 
+                avatar_url,
+                premium_since,
+                status,
+                mobile_status,
                 desktop_status,
-                web_status, 
-                roles, 
-                activities, 
-                created_at, 
+                web_status,
+                roles,
+                activities,
+                created_at,
                 joined_at,
                 last_updated,
-                last_online, 
+                last_online,
                 update_type
-            ])
-    conn.commit()
-    conn.close()
+                )
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                [
+                    userid,
+                    discriminator,
+                    name,
+                    guild_id,
+                    guild_user_display_name,
+                    avatar_url,
+                    premium_since,
+                    status,
+                    mobile_status,
+                    desktop_status,
+                    web_status,
+                    roles,
+                    activities,
+                    created_at,
+                    joined_at,
+                    last_updated,
+                    last_online,
+                    update_type
+                ])
+        conn.commit()
 
 def get_status(status: discord.Status):
     if status == discord.Status.online:
@@ -200,7 +197,9 @@ def get_status(status: discord.Status):
         return 'Offline'
     return 'None'
 
-def compare_changes(before: discord.Member, after: discord.Member):
+def compare_changes(before: discord.Member, after: discord.Member) -> str:
+    """Function will take changes between two member objects and attempt to find
+    the difference between them"""
     _str = ""
     if before.id != after.id:
         _str += 'id'
