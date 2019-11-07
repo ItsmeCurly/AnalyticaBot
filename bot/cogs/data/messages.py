@@ -47,9 +47,10 @@ async def on_message_connect(message: discord.Message) -> None:
         channel_id=message.channel.id,
         guild_id=message.guild.id if message.guild else -1,
         embeds=None,
-        attachments=",".join(attachment.url for attachment in message.attachments),
-        reactions=",".join(message.reactions.emoji),
-        time=datetime.now(),
+        attachments=",".join(attachment.url for attachment in 
+                            message.attachments),
+        reactions=",".join(reaction.emoji for reaction in message.reactions),
+        time=datetime.utcnow(),
         edited=0,
         message_type="SEND_MESSAGE"
         )
@@ -62,9 +63,10 @@ async def on_message_edit_connect(message: discord.Message) -> None:
         channel_id=message.channel.id,
         guild_id=message.guild.id if message.guild else -1,
         embeds=None,
-        attachments=",".join(attachment.url for attachment in message.attachments),
+        attachments=",".join(attachment.url for attachment in 
+                            message.attachments),
         reactions=",".join(message.reactions),
-        time=datetime.now(),
+        time=datetime.utcnow(),
         edited=1,
         message_type="EDIT_MESSAGE"
     )
@@ -81,8 +83,9 @@ async def on_raw_message_edit_connect(payload: discord.RawMessageUpdateEvent):
         channel_id=try_get_value(payload_dict, "channel_id", None),
         guild_id=try_get_value(payload_dict, "guild_id", None),
         embeds = None, #TODO
-        # TODO
-        attachments=(",".join(attachment['url'] for attachment in payload_dict['attachments']) if 'attachment' in payload_dict else None),
+        attachments=(",".join(attachment['url'] for attachment in 
+                            payload_dict['attachments']) if 'attachment' in 
+                            payload_dict else None),
         reactions = None, #Cannot get reactions from message edit
         time = try_get_value(payload_dict, "edited_timestamp", None),
         edited = 1,

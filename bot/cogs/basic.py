@@ -1,16 +1,21 @@
 import discord
-from discord.ext import commands
+from discord.ext.commands import command, Context, Cog
 
 from bot.decorators import with_roles, developer
 from bot.constants import MODERATION_ROLES
 
-class Basic(commands.Cog):
+class Basic(Cog):
     def __init__(self, bot):
         self.bot = bot
+        
+    @developer()
+    @command()
+    async def shutdown(self, ctx: Context):
+        self.bot.close()
 
     @developer()
-    @commands.command()
-    async def test(self, ctx: commands.Context):
+    @command()
+    async def test(self, ctx: Context) -> None:
         print("Test2")
         await ctx.send(ctx.author.status)
 

@@ -12,6 +12,10 @@ from bot.cogs.data.dbref import recent_message_connect
 class UserProfiles(Cog):
     def __init__(self, bot):
         self.bot = bot
+        
+    @Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        on_message_connect(message)
 
     @Cog.listener()
     async def on_user_update(self, before: discord.User,
@@ -40,15 +44,29 @@ class UserProfiles(Cog):
         for member in ctx.message.guild.members:
             full_update_connect(member)
 
-def user_update_connect(user: discord.User) -> None:
+def on_message_connect(message: discord.Message) -> None:
+    user=message.author
     connect(
         userid=user.id,
+        discriminator=user.discriminator,
         name=user.name,
-        avatar_url=user.avatar_url,
+        avatar_url=str(user.avatar_url),
         activities=None,
         created_at=user.created_at,
         joined_at=None,
-        update_type='USER_UPDATE'
+        update_type='SEND_MESSAGE'
+    )
+
+def user_update_connect(user: discord.User) -> None:
+    connect(
+        userid=user.id,
+        discriminator=user.discriminator,
+        name=user.name,
+        avatar_url=str(user.avatar_url),
+        activities=None,
+        created_at=user.created_at,
+        joined_at=None,
+        update_type='UPDATE_USER'
     )
 
 def full_update_connect(member: discord.Member) -> None:
@@ -68,7 +86,7 @@ def full_update_connect(member: discord.Member) -> None:
         activities=','.join(activity.name for activity in member.activities),
         created_at=member.created_at,
         joined_at=member.joined_at,
-        update_type='FULL_MEMBER_UPDATE'
+        update_type='UDPATE_FULL_MEMBER'
     )
 
 def member_update_connect(member: discord.Member) -> None:
@@ -88,7 +106,7 @@ def member_update_connect(member: discord.Member) -> None:
         activities=','.join(activity.name for activity in member.activities),
         created_at=member.created_at,
         joined_at=member.joined_at,
-        update_type='MEMBER_UPDATE'
+        update_type='UPDATE_MEMBER'
     )
 
 def member_join_connect(member: discord.Member) -> None:
@@ -108,7 +126,7 @@ def member_join_connect(member: discord.Member) -> None:
         activities=','.join(activity.name for activity in member.activities),
         created_at=member.created_at,
         joined_at=member.joined_at,
-        update_type='MEMBER_JOIN'
+        update_type='JOIN_MEMBER'
     )
 
 def member_leave_connect(member: discord.Member) -> None:
@@ -128,15 +146,15 @@ def member_leave_connect(member: discord.Member) -> None:
         activities=','.join(activity.name for activity in member.activities),
         created_at=member.created_at,
         joined_at=member.joined_at,
-        update_type='MEMBER_LEAVE'
+        update_type='LEAVE_MEMBER'
     )
 
 def connect(*, userid:int, discriminator:int = -1, name:str, guild_id:int = -1,
             guild_user_display_name:str = "", avatar_url:str,
             premium_since:datetime = None, status=None, mobile_status=None,
             desktop_status=None, web_status=None, roles=None, activities,
-            created_at, joined_at, last_updated=datetime.now(), last_online=
-            datetime.now(), update_type: str) -> None:
+            created_at, joined_at, last_updated=datetime.utcnow(), last_online=
+            datetime.utcnow(), update_type: str) -> None:
     """Helper function to connect to database, passed with many parameters to
     supplement a large query"""
 

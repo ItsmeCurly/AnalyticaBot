@@ -4,11 +4,6 @@ from discord.ext import commands
 from bot.decorators import with_roles
 from bot.constants import MODERATION_ROLES
 
-def is_admin(member):
-    return member.guild_permissions == discord.Permissions.administrator
-def is_owner(member):
-    return member.id == discord.Guild.owner
-
 class ServerUtil(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
