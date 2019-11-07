@@ -29,6 +29,22 @@ class Messages(Cog):
     async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
         await on_raw_message_edit_connect(payload)
 
+    @Cog.listener()
+    async def on_reaction_add(self, reaction: discord.Reaction, user) -> None:
+        await on_reaction_add_connect(reaction, user)
+
+    @Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
+        await on_raw_reaction_add_connect(payload)
+
+    @Cog.listener()
+    async def on_reaction_remove(self, reaction: discord.Reaction, user) -> None:
+        await on_reaction_remove_connect(reaction, user)
+
+    @Cog.listener()
+    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent) -> None:
+        await on_raw_reaction_remove_connect(payload)
+
     @command()
     async def message_get_last(self, ctx: Context, *, amt: int) -> None :
         await recent_message_connect(ctx = ctx, table_name='messages', amt=amt)
@@ -39,6 +55,25 @@ class Messages(Cog):
         #await ctx.send()
         pass
 
+async def on_reaction_add_connect(reaction: discord.Reaction, user) -> None:
+    pass
+
+async def on_raw_reaction_add_connect(payload: discord.RawReactionActionEvent) -> None:
+    if payload.cached_message:
+        return
+    payload_dict = payload.data
+    print(payload_dict)
+
+async def on_reaction_remove_connect(reaction: discord.Reaction, user) -> None:
+    pass
+
+async def on_raw_reaction_remove_connect(payload: discord.RawReactionActionEvent) -> None:
+    if payload.cached_message:
+        return
+    payload_dict = payload.data
+    print(payload_dict)
+
+
 async def on_message_connect(message: discord.Message) -> None:
     await connect(
         message_id=message.id,
@@ -47,7 +82,7 @@ async def on_message_connect(message: discord.Message) -> None:
         channel_id=message.channel.id,
         guild_id=message.guild.id if message.guild else -1,
         embeds=None,
-        attachments=",".join(attachment.url for attachment in 
+        attachments=",".join(attachment.url for attachment in
                             message.attachments),
         reactions=",".join(reaction.emoji for reaction in message.reactions),
         time=datetime.utcnow(),
@@ -63,7 +98,7 @@ async def on_message_edit_connect(message: discord.Message) -> None:
         channel_id=message.channel.id,
         guild_id=message.guild.id if message.guild else -1,
         embeds=None,
-        attachments=",".join(attachment.url for attachment in 
+        attachments=",".join(attachment.url for attachment in
                             message.attachments),
         reactions=",".join(message.reactions),
         time=datetime.utcnow(),
@@ -83,8 +118,8 @@ async def on_raw_message_edit_connect(payload: discord.RawMessageUpdateEvent):
         channel_id=try_get_value(payload_dict, "channel_id", None),
         guild_id=try_get_value(payload_dict, "guild_id", None),
         embeds = None, #TODO
-        attachments=(",".join(attachment['url'] for attachment in 
-                            payload_dict['attachments']) if 'attachment' in 
+        attachments=(",".join(attachment['url'] for attachment in
+                            payload_dict['attachments']) if 'attachment' in
                             payload_dict else None),
         reactions = None, #Cannot get reactions from message edit
         time = try_get_value(payload_dict, "edited_timestamp", None),
