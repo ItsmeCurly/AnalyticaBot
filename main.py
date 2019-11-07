@@ -18,6 +18,7 @@ bot.load_extension('bot.cogs.events')
 bot.load_extension('bot.cogs.emoji')
 bot.load_extension('bot.cogs.serverutil')
 bot.load_extension('bot.cogs.cogs')
+bot.load_extension('bot.cogs.music')
 
 bot.load_extension('bot.cogs.data.messages')
 bot.load_extension('bot.cogs.data.userprofiles')

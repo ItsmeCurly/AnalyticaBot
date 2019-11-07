@@ -1,12 +1,12 @@
 import discord
 from discord.utils import get
 
-from discord.ext.commands import command, Context
+from discord.ext.commands import command, Context, Cog
 from bot.decorators import with_roles
 from bot.constants import MODERATION_ROLES
 from datetime import datetime, date
 
-class Purge(commands.Cog):
+class Purge(Cog):
     def __init__(self, bot):
         self.bot = bot
     
