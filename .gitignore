@@ -110,3 +110,4 @@ bot-env/
 cogtemplate.py
 config.ini
 templates
+music/*
