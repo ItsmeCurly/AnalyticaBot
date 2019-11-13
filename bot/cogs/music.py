@@ -14,17 +14,15 @@ class Music(Cog):
 
     @command()
     async def join(self, ctx: Context):
-        print("a")
-        # if not (chan := ctx.author.voice.channel):
-        #     return
-        # self.voice_client = await chan.connect()
+        if not (chan := ctx.author.voice.channel):
+            return
+        self.voice_client = await chan.connect()
 
     @command()
     async def leave(self, ctx:Context):
-        pass
-        # if not self.voice_client:
-        #     return
-        # await self.voice_client.disconnect()
+        if not self.voice_client:
+            return
+        await self.voice_client.disconnect()
 
     @command()
     async def play(self, ctx: Context, sound_name: str):
