@@ -9,8 +9,7 @@ OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus
 class Music(Cog):
     def __init__(self, bot):
         self.bot = bot
-        #self.voice_client = None
-        #load_opus_lib()
+        load_opus_lib()
 
     @command()
     async def join(self, ctx: Context):
@@ -18,15 +17,25 @@ class Music(Cog):
             return
         self.voice_client = await chan.connect()
 
-    @command()
+    @command(aliases=['lv'])
     async def leave(self, ctx:Context):
         if not self.voice_client:
             return
         await self.voice_client.disconnect()
+        self.voice_client = None
 
-    @command()
+    @command(aliases=['paly'])
     async def play(self, ctx: Context, sound_name: str):
-        pass
+        """Need to handle when user inputs song from spotify, playlist from 
+        spotify, song from youtube, playlist from youtube, song from soundcloud,
+        
+        import moviepy.editor as mp
+        clip = mp.VideoFileClip("myvideo.mp4").subclip(0,20)
+        clip.audio.write_audiofile("theaudio.mp3")
+        """
+        audio = create_audio_source(sound_name)
+        if not self.voice_client.is_playing():
+            self.voice_client.play(audio, after=None)
 
 def load_opus_lib():
     if opus.is_loaded():
@@ -41,7 +50,8 @@ def load_opus_lib():
         raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(OPUS_LIBS)))
 
 def create_audio_source(file_name: str) -> discord.AudioSource:
-    discord.FFmpegPCMAudio(source="music\\sound.mp3")
+    audio = discord.FFmpegPCMAudio(source="music\\sound.mp3")
+    return audio
 
 def setup(bot):
     bot.add_cog(Music(bot))
