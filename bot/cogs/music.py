@@ -26,16 +26,12 @@ class Music(Cog):
 
     @command(aliases=['paly'])
     async def play(self, ctx: Context, sound_name: str):
-        """Need to handle when user inputs song from spotify, playlist from 
+        """Need to handle when user inputs song from spotify, playlist from
         spotify, song from youtube, playlist from youtube, song from soundcloud,
-        
-        import moviepy.editor as mp
-        clip = mp.VideoFileClip("myvideo.mp4").subclip(0,20)
-        clip.audio.write_audiofile("theaudio.mp3")
+
         """
         audio = create_audio_source(sound_name)
-        if not self.voice_client.is_playing():
-            self.voice_client.play(audio, after=None)
+        self.voice_client.play(audio, after=None)
 
 def load_opus_lib():
     if opus.is_loaded():
@@ -50,7 +46,7 @@ def load_opus_lib():
         raise RuntimeError('Could not load an opus lib. Tried %s' % (', '.join(OPUS_LIBS)))
 
 def create_audio_source(file_name: str) -> discord.AudioSource:
-    audio = discord.FFmpegPCMAudio(source="music\\sound.mp3")
+    audio = discord.FFmpegPCMAudio(source="music\\video.mp3")
     return audio
 
 def setup(bot):
