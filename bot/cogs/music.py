@@ -11,7 +11,7 @@ OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll', 'libopus-0.dll', 'libopus
 class Music(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.downloader = Downloader()
+        self.downloader = Downloader(2)
         load_opus_lib()
 
     @command()
