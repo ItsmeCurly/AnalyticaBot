@@ -2,12 +2,22 @@ def try_get_value(_dict, key, default_val):
     return _dict[key] if key in _dict else default_val
 
 def find_closest_user(iterable, name):
-    new_list = []
+    max_val = -1
+    max_user = None
+    for member in iterable:
+        lcs = longest_common_subsequence(name, member.name)
+        if max_val < lcs:
+            max_val = lcs
+            max_user = member
+            if max_val == len(name):
+                break
+
+    return max_user
 
 def longest_common_subsequence(name1, name2):
     new_name1 = name1.lower().replace(" ", "")
     new_name2 = name2.lower().replace(" ", "") #lowercase and remove all spaces
-    
+
     return lcs(new_name1, new_name2, len(new_name1), len(new_name2))
 
 def lcs(name1, name2, m, n) -> int:
@@ -17,6 +27,6 @@ def lcs(name1, name2, m, n) -> int:
         return 1 + lcs(name1, name2, m-1, n-1)
     else:
         return max(lcs(name1, name2, m-1, n), lcs(name1, name2, m, n-1))
-    
+
 if __name__ == "__main__":
-    print(longest_common_subsequence("Curly", "curly"))
+    print(longest_common_subsequence("curl", "curyl"))

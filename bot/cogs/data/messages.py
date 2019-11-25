@@ -61,8 +61,8 @@ async def on_reaction_add_connect(reaction: discord.Reaction, user) -> None:
 async def on_raw_reaction_add_connect(payload: discord.RawReactionActionEvent) -> None:
     if payload.cached_message:
         return
-    payload_dict = payload.data
-    print(payload_dict)
+    #payload_dict = payload.data
+    #print(payload_dict)
 
 async def on_reaction_remove_connect(reaction: discord.Reaction, user) -> None:
     pass
@@ -70,8 +70,8 @@ async def on_reaction_remove_connect(reaction: discord.Reaction, user) -> None:
 async def on_raw_reaction_remove_connect(payload: discord.RawReactionActionEvent) -> None:
     if payload.cached_message:
         return
-    payload_dict = payload.data
-    print(payload_dict)
+    #payload_dict = payload.data
+    #print(payload_dict)
 
 
 async def on_message_connect(message: discord.Message) -> None:
@@ -110,7 +110,7 @@ async def on_raw_message_edit_connect(payload: discord.RawMessageUpdateEvent):
     if payload.cached_message:
         pass# return
     payload_dict = payload.data
-    print(payload_dict)
+    #print(payload_dict)
     await connect(
         message_id=try_get_value(payload_dict, "id", None),
         member_id = payload_dict["author"]["id"] if "author" in payload_dict else -1,

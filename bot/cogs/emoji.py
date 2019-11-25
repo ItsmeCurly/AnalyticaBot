@@ -11,7 +11,7 @@ class Emoji(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @with_roles(MODERATION_ROLES, 'manage_emojis')
+    @with_roles(MODERATION_ROLES + ('manage_emojis',))
     @commands.command()
     async def create_emoji(self, ctx, arg1, arg2):
         #ctx.send("Create_emoji")

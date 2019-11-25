@@ -12,7 +12,7 @@ from bot.cogs.data.dbref import recent_message_connect
 class UserProfiles(Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
     @Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         on_message_connect(message)

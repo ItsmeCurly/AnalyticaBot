@@ -9,4 +9,4 @@ PREFIXES_PATH = r'prefixes.json'
 DATABASE_PATH = r'db\\analyticaDataPoints.db'
 
 ACCEPTORS = ['y', 'yes', 'yay', 'ye', 'yeah', 'yea']
-DENIERS = ['n', 'no', 'nah', 'na', 'nay']
+NEGATORS = ['n', 'no', 'nah', 'na', 'nay']

@@ -48,7 +48,7 @@ class Prefix(commands.Cog):
             await ctx.send('Your only prefix is \'!\'')
 
         author_id = str(ctx.message.author.id)
-        if (author_id not in prefixes[guild_id] or 
+        if (author_id not in prefixes[guild_id] or
             prefixes[guild_id][author_id] == '!'):
             await ctx.send('Your only prefix is \'!\'')
             return
@@ -57,7 +57,7 @@ class Prefix(commands.Cog):
 
         await ctx.send(f"Your prefixes are {', '.join(all_prefix)}")
 
-    @with_roles(*MODERATION_ROLES)
+    @with_roles(MODERATION_ROLES)
     @commands.command()
     async def set_server_prefix(self, ctx, *pre):
         if len(pre) == 0:

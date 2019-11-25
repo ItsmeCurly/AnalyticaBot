@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot.constants import ACCEPTORS, DENIERS, DATABASE_PATH
+from bot.constants import ACCEPTORS, NEGATORS, DATABASE_PATH
 from bot.decorators import developer
 from bot.utils.database import (create_messages_table, create_serverref_table,
                                 create_userprofiles_table, pprint_table_structure)
@@ -25,7 +25,7 @@ class DbFuncs(Cog):
                 self.table_name = ""
                 await message.channel.send(f"Successfully deleted table {self.table_name}")
 
-        elif message.content.lower() in DENIERS:
+        elif message.content.lower() in NEGATORS:
             if self.waiting_delete_table:
                 self.waiting_delete_table = False
                 self.table_name = ""
