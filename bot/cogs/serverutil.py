@@ -2,12 +2,13 @@ import discord
 
 from discord.ext.commands import Cog, command, CheckFailure, Context
 from bot.decorators import with_roles
-from bot.constants import MODERATION_ROLES, ACCEPTORS, NEGATORS
+from bot.constants import MODERATION_ROLES, ACCEPTORS, NEGATORS, NATE_PURGE_MESSAGE
 import time
 
 from bot.utils.helper_functions import find_closest_user
 
 import pprint
+
 
 class ServerUtil(Cog):
     def __init__(self, bot):
@@ -17,6 +18,9 @@ class ServerUtil(Cog):
 
     @Cog.listener()
     async def on_message(self, msg: discord.Message):
+        """Listens to a message for confirmation on the server purge as of 
+        now"""
+
         if self.purge_server_check and msg.content in ACCEPTORS:
             self.purge_server_check = False
             await remove_members(self.bot, self.members_to_remove, self.guild_to_remove, msg)
@@ -26,7 +30,7 @@ class ServerUtil(Cog):
             await msg.channel.send(f"Server \"{self.guild_to_remove}\" not purged")
         elif self.purge_server_check and msg.content.startswith('='):
             for member in self.members_to_remove:
-                await member.send("""Heyy, you're getting this message as a last-minute notification that you haven't joined the **[QwQ Shibe Boutique]** temporary server to guarantee your stay; this is going out as a way to prevent unintentional kicking of members due to lack of checking discord/notifications from servers. Please read the recent large announcement regarding this, and DM **QwQ#8255** for an invite if you read this later than **11:59PM PST** on **11-24-2019** and **intend to stay**. Your decision is respected if you still decide not to. Thanks!""")
+                await member.send(NATE_PURGE_MESSAGE)
         elif self.purge_server_check and msg.content.startswith('-'):
             member = find_closest_user(self.members_to_remove, msg.content[1:])
             self.members_to_remove.remove(member)
@@ -41,40 +45,44 @@ class ServerUtil(Cog):
     @with_roles(MODERATION_ROLES)
     @command()
     async def kick_user(self, ctx, *, name, reason):
-        await self.bot.kick(name, reason = reason)
+        await self.bot.kick(name, reason=reason)
 
     @with_roles(MODERATION_ROLES)
     @command()
     async def kick_users(self, ctx, *names):
         """I feel like these functions were written by a monkey"""
+
         for name in names:
-            await self.bot.kick(name, reason = None)
+            await self.bot.kick(name, reason=None)
 
     @with_roles(MODERATION_ROLES)
     @command()
     async def clear_messages(self, ctx: Context, user, amount, *channels):
-        """Probably need to rewrite
-        """
-        #messages = await ctx.channel.history(limit=amount).flatten()
+        """Need to rewrite"""
+
+        # messages = await ctx.channel.history(limit=amount).flatten()
         pass
 
     @with_roles(MODERATION_ROLES)
     @command()
     async def prune_members(self, ctx: Context, _days: int):
-        estimate_prune = await ctx.guild.estimate_pruned_members(days = _days)
+        """To fix and work on possibly"""
+
+        estimate_prune = await ctx.guild.estimate_pruned_members(days=_days)
         await ctx.channel.send(f"Estimated prune members: {estimate_prune}")
 
     @command()
+    @with_roles(MODERATION_ROLES)
     async def get_server_id(self, ctx):
         """Returns a server's id. Will return the id of the server from where it
-        is requested.
-        """
+        is requested."""
+
         await ctx.channel.send(f"This server's id is {ctx.guild.id}")
 
     @command()
     async def get_user_id(self, ctx):
-        """Returns a user's id that requested it
-        """
+        """Returns a user's id that requested it"""
+
         await ctx.channel.send(f"Your user id is {ctx.author.id}")
 
     @get_server_id.error
@@ -88,8 +96,8 @@ class ServerUtil(Cog):
         """Removes all the members from server_id1 that do not exist in
         server_id2. The bot must be present in both servers for this to
         function. Server ids can be gotten from !get_server_id within the
-        server to get the id.
-        """
+        server to get the id."""
+
         bot_server_list = self.bot.guilds
 
         server1, server2 = None, None
@@ -112,7 +120,7 @@ class ServerUtil(Cog):
         for member in remove_list:
             to_print += f"@{member.name}#{member.discriminator}, "
         if to_print:
-            to_print=to_print[:-2]
+            to_print = to_print[:-2]
 
         await ctx.send(f"Those members are: {to_print}")
 
@@ -122,12 +130,15 @@ class ServerUtil(Cog):
         self.members_to_remove, self.guild_to_remove = remove_list, server1
         self.all_members = server1.members
 
-async def remove_members(bot, members: list, guild: discord.Guild, msg: discord.Message) -> None:
+
+async def remove_members(bot, members: list, guild: discord.Guild,
+                         msg: discord.Message) -> None:
     for member in members:
         print(member)
-        #await guild.kick(member)
-        #await msg.channel.send(f"Kicked {member.mention}")
+        # await guild.kick(member)
+        # await msg.channel.send(f"Kicked {member.mention}")
         time.sleep(1)
+
 
 def setup(bot):
     bot.add_cog(ServerUtil(bot))

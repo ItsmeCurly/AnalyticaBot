@@ -4,10 +4,11 @@ from discord.ext.commands import command, Context, Cog
 from bot.decorators import with_roles, developer
 from bot.constants import MODERATION_ROLES
 
+
 class Basic(Cog):
     def __init__(self, bot):
         self.bot = bot
-        
+
     @developer()
     @command()
     async def shutdown(self, ctx: Context):

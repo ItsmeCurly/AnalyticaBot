@@ -11,7 +11,7 @@ class Cogs(Cog):
 
     @developer()
     @command()
-    async def load_cog(self, ctx: Context, *, extension_name: str) -> None:
+    async def load(self, ctx: Context, *, extension_name: str) -> None:
         try:
             self.bot.load_extension('bot.cogs.' + extension_name)
         except:
@@ -20,7 +20,7 @@ class Cogs(Cog):
 
     @developer()
     @command()
-    async def unload_cog(self, ctx: Context, *, extension_name: str) -> None:
+    async def unload(self, ctx: Context, *, extension_name: str) -> None:
         print("test")
         try:
             self.bot.unload_extension('bot.cogs.' + extension_name)
@@ -30,12 +30,13 @@ class Cogs(Cog):
 
     @developer()
     @command()
-    async def reload_cog(self, ctx: Context, *, extension_name: str) -> None:
+    async def reload(self, ctx: Context, *, extension_name: str) -> None:
         try:
             self.bot.reload_extension('bot.cogs.' + extension_name)
         except:
             print(f"'{extension_name.title()}' not loaded")
         await ctx.send(f"{extension_name} reloaded")
+
 
 def setup(bot):
     bot.add_cog(Cogs(bot))
