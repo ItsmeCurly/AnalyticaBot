@@ -11,6 +11,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import asyncio
 import functools
 
+from bot.exceptions import AnalyticaError
+
 from bot.utils.video_downloader import Downloader
 
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll',
@@ -139,7 +141,7 @@ class VoiceState:
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        #self.sp = spotipy_setup_client_credentials()
+        self.sp = spotipy_setup_client_credentials()
 
         self.voice_states = {}
 
@@ -155,12 +157,14 @@ class Music(commands.Cog):
 
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.voice_state = await self.get_voice_state(ctx)
-
+        
+    
     @commands.command()
     async def join(self, ctx: commands.Context):
         if not (author_voice := ctx.author.voice):
-            await ctx.send("You are not in a voice channel for me to join")
-            return
+            return await ctx.send("You are not in a voice channel for me to join")
+        if ctx.voice_state.voice_client:
+            return await ctx.send("I am already in a voice channel, use summon to move me from my current voice channel")
         voice = await author_voice.channel.connect()
 
         ctx.voice_state.voice_client = voice
@@ -168,119 +172,48 @@ class Music(commands.Cog):
     @commands.command(aliases=['lv'])
     async def leave(self, ctx: commands.Context):
         if not ctx.voice_state.voice_client:
-            await ctx.send("I am not presently in a voice channel")
-            return
+            return await ctx.send("I am not presently in a voice channel")
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
 
     @commands.command(aliases=['paly'])
     async def play(self, ctx: commands.Context, sound_name: str):
-        # print(sound_name)
-        # if "http://" in sound_name or "https://" in sound_name:
-        #     if "open.spotify.com" in sound_name:
-        #         if "playlist" in sound_name:
-        #             #get the playlist, must use 'spotify' for login
-        #             playlist = self.sp.user_playlist('spotify',
-        #                                             playlist_id=sound_name)
-        #             #get a list of the tracks in the playlist
-        #             playlist_tracks = playlist['tracks']
+        if "http://" in sound_name or "https://" in sound_name:
+            if "open.spotify.com" in sound_name:
+                if "playlist" in sound_name:
+                    #get the playlist, must use 'spotify' for login
+                    playlist = self.sp.user_playlist('spotify',
+                                                    playlist_id=sound_name)
+                    #get a list of the tracks in the playlist
+                    playlist_tracks = playlist['tracks']
 
-        #             #have to reference each item specifically
-        #             playlist_items = playlist_tracks['items']
-        #             for item in playlist_items:
-        #                 #get the track information
-        #                 track = item['track']
+                    #have to reference each item specifically
+                    playlist_items = playlist_tracks['items']
+                    for item in playlist_items:
+                        #get the track information
+                        track = item['track']
 
-        #                 #get the artists information
-        #                 artists = track['artists']
+                        #get the artists information
+                        artists = track['artists']
 
-        #                 #group all the artists names together into a string for
-        #                 #searching on YouTube
-        #                 artists_name = ""
-        #                 for artist in artists:
-        #                     artists_name += artist['name'] + " "
+                        #group all the artists names together into a string for
+                        #searching on YouTube
+                        artists_name = ""
+                        for artist in artists:
+                            artists_name += artist['name'] + " "
 
-        #                 print(track['name'])
+                        song = await self.create_song_from_source(ctx, artists_name.strip() + track['name'], loop=self.bot.loop)
 
-        #                 #create the song object to add to the queue
-        #                 song = Song(song_name = track['name'],
-        #                             artists_name = artists_name.strip(),
-        #                             source_url = sound_name,
-        #                             downloader = self.downloader)
+                        await ctx.voice_state.songs.put(song)
+        else:
+            song = await self.create_song_from_source(ctx, sound_name)
 
-        #                 await song.get_youtube_equivalent()
+            await ctx.voice_state.songs.put(song)
 
-        #                 #add song to bot song queue
-        #                 self.queue.add_to_queue(song)
-        #                 await self.queue.play_queue()
-
-        #     elif "www.youtube.com" in sound_name:
-        #         pass
-        #     elif "soundcloud.com" in sound_name:
-        #         pass
-        #     else:
-        #         print("Unidentified host name for song")
-        # else:
-        #     self.downloader.search_vid(sound_name, artists_name)
-
-        # audio = create_audio_source(sound_name)
-        # self.voice_client.play(audio, after=None)
-
+    async def create_song_from_source(self, ctx, sound_name):
         source = await SoundSource.create_source(ctx, sound_name, loop=self.bot.loop)
 
-        song = Song(source)
-
-        await ctx.voice_state.songs.put(song)
-
-# class Song:
-#     def __init__(self, *, song_name, artists_name, source_url, downloader):
-#         self.song_name = song_name
-#         self.artists_name = artists_name
-#         self.downloader = downloader
-#         self.source_url = source_url
-#         self.youtube_url = None
-#         self.is_loaded = False
-#         self.file_name = ""
-
-#     async def get_youtube_equivalent(self):
-#         if "www.youtube.com" in self.source_url:
-#             self.youtube_url = self.source_url
-#             return
-#         await self.downloader.search_vid(self.song_name, self.artists_name)
-#         self.youtube_url = self.downloader.search_results[0][0]
-
-#     async def download_song(self):
-#         await self.downloader.download_yt_video(self.youtube_url, self.song_name, self.artists_name)
-#         self.is_loaded = True
-
-
-# class Queue:
-#     def __init__(self):
-#         self.songs = []
-#         self.current_song_index = -1
-#         self.current_song = None
-#         self.is_playing = False
-
-#     def add_to_queue(self, song: Song):
-#         self.songs.append(song)
-
-#     async def play_queue(self):
-#         if not self.is_playing:
-#             await self.play_next_song()
-
-#     async def play_next_song(self):
-#         self.current_song_index += 1
-#         self.current_song = self.songs[self.current_song_index]
-#         if not self.current_song.is_loaded:
-#             await self.current_song.download_song()
-
-#         if self.current_song_index != len(self.songs) - 1:
-#             await self.load_next_song()
-
-#     async def load_next_song(self):
-#         next_song = self.songs[self.current_song_index+1]
-#         await next_song.download_song()
-#         next_song.is_loaded = True
+        return Song(source)
 
 def load_opus_lib():
     if opus.is_loaded():
@@ -300,6 +233,7 @@ def spotipy_setup_client_credentials():
         client_id='d6868e900537402197e3ced73f10a6cf', client_secret='e69173223a6441da9b0ab80c2bc6c777')
     return spotipy.Spotify(
         client_credentials_manager=client_credentials_manager)
+
 
 def setup(bot):
     bot.add_cog(Music(bot))
