@@ -13,34 +13,6 @@ import pprint
 class ServerUtil(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.purge_server_check = False
-        self.members_to_remove, self.guild_to_remove, self.all_members = None, None, None
-
-    @Cog.listener()
-    async def on_message(self, msg: discord.Message):
-        """Listens to a message for confirmation on the server purge as of 
-        now"""
-
-        if self.purge_server_check and msg.content in ACCEPTORS:
-            self.purge_server_check = False
-            await remove_members(self.bot, self.members_to_remove, self.guild_to_remove, msg)
-            self.members_to_remove, self.guild_to_remove = None, None
-        elif self.purge_server_check and msg.content in NEGATORS:
-            self.purge_server_check = False
-            await msg.channel.send(f"Server \"{self.guild_to_remove}\" not purged")
-        elif self.purge_server_check and msg.content.startswith('='):
-            for member in self.members_to_remove:
-                await member.send(NATE_PURGE_MESSAGE)
-        elif self.purge_server_check and msg.content.startswith('-'):
-            member = find_closest_user(self.members_to_remove, msg.content[1:])
-            self.members_to_remove.remove(member)
-            await msg.channel.send(f"Member {member.name}#{member.discriminator} removed from list")
-            await msg.channel.send(f"Current list is {self.members_to_remove}")
-        elif self.purge_server_check and msg.content.startswith('+'):
-            member = find_closest_user(self.all_members, msg.content[1:])
-            self.members_to_remove.append(member)
-            await msg.channel.send(f"Member {member.name}#{member.discriminator} added to list")
-            await msg.channel.send(f"Current list is {self.members_to_remove}")
 
     @with_roles(MODERATION_ROLES)
     @command()
@@ -123,21 +95,41 @@ class ServerUtil(Cog):
             to_print = to_print[:-2]
 
         await ctx.send(f"Those members are: {to_print}")
-
         await ctx.send("Are you sure you would like to remove these members? (y/n)")
 
-        self.purge_server_check = True
-        self.members_to_remove, self.guild_to_remove = remove_list, server1
-        self.all_members = server1.members
+        done = False
+        def check(msg: discord.Message):
+            return msg.channel == ctx.message.channel
 
+        while not done:
+            msg = await self.bot.wait_for('message', check=check)
 
-async def remove_members(bot, members: list, guild: discord.Guild,
-                         msg: discord.Message) -> None:
-    for member in members:
-        print(member)
-        # await guild.kick(member)
-        # await msg.channel.send(f"Kicked {member.mention}")
-        time.sleep(1)
+            if msg.content in ACCEPTORS:
+                for member in remove_list:
+                    await server1.kick(member)
+                    await msg.channel.send(f"Kicked {member.mention}")
+                    time.sleep(1)
+                done = True
+
+            elif msg.content in NEGATORS:
+                await msg.channel.send(f"Server \"{server1}\" not purged")
+                done = True
+
+            elif msg.content.startswith('='):
+                for member in remove_list:
+                    await member.send(NATE_PURGE_MESSAGE)
+
+            elif msg.content.startswith('-'):
+                member = find_closest_user(remove_list, msg.content[1:])
+                remove_list.remove(member)
+                await msg.channel.send(f"Member {member.name}#{member.discriminator} removed from list")
+                await msg.channel.send(f"Current list is {remove_list}")
+
+            elif msg.content.startswith('+'):
+                member = find_closest_user(server1.members, msg.content[1:])
+                remove_list.append(member)
+                await msg.channel.send(f"Member {member.name}#{member.discriminator} added to list")
+                await msg.channel.send(f"Current list is {remove_list if len(remove_list) > 0 else 'empty'}")
 
 
 def setup(bot):

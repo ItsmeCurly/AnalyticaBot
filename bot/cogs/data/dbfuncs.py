@@ -13,22 +13,6 @@ from bot.utils.database import (create_messages_table, create_serverref_table,
 class DbFuncs(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.waiting_delete_table = False
-        self.table_name = ""
-
-    @Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.content.lower() in ACCEPTORS:
-            if self.waiting_delete_table:
-                delete_table_func(self.table_name)
-                self.waiting_delete_table = False
-                self.table_name = ""
-                await message.channel.send(f"Successfully deleted table {self.table_name}")
-
-        elif message.content.lower() in NEGATORS:
-            if self.waiting_delete_table:
-                self.waiting_delete_table = False
-                self.table_name = ""
 
     @command()
     @developer()
@@ -36,6 +20,18 @@ class DbFuncs(Cog):
         self.waiting_delete_table = True
         self.table_name = table_name
         await ctx.send(f"Would you like to delete {table_name}? (Y/N)")
+
+        def check(msg: discord.Message):
+            return ctx.message.channel == msg.channel
+
+        msg = await self.bot.wait_for('message', check=check)
+
+        if msg.content.lower() in ACCEPTORS:
+            delete_table_func(self.table_name)
+            await msg.channel.send(f"Successfully deleted {table_name}")
+
+        elif msg.content.lower() in NEGATORS:
+            await msg.channel.send(f"{table_name} not deleted")
 
     @command()
     @developer()

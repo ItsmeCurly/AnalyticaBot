@@ -8,6 +8,7 @@ from bot.constants import MODERATION_ROLES
 class Basic(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.boo = False
 
     @developer()
     @command()
@@ -18,6 +19,7 @@ class Basic(Cog):
     @command()
     async def test(self, ctx: Context) -> None:
         print("Test2")
+        self.boo = True
         await ctx.send(ctx.author.status)
 
 
