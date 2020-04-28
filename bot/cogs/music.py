@@ -10,6 +10,9 @@ from discord.ext import commands
 from spotipy.oauth2 import SpotifyClientCredentials
 import asyncio
 import functools
+import aiohttp
+import html5lib
+
 
 from bot.exceptions import AnalyticaError
 
@@ -145,7 +148,7 @@ class Music(commands.Cog):
 
         self.voice_states = {}
 
-        #load_opus_lib()
+        load_opus_lib()
 
     async def get_voice_state(self, ctx: commands.Context):
         voice_state = self.voice_states.get(ctx.guild.id)
@@ -157,8 +160,8 @@ class Music(commands.Cog):
 
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.voice_state = await self.get_voice_state(ctx)
-        
-    
+
+
     @commands.command()
     async def join(self, ctx: commands.Context):
         if not (author_voice := ctx.author.voice):
@@ -178,37 +181,37 @@ class Music(commands.Cog):
 
     @commands.command(aliases=['paly'])
     async def play(self, ctx: commands.Context, sound_name: str):
-        if "http://" in sound_name or "https://" in sound_name:
-            if "open.spotify.com" in sound_name:
-                if "playlist" in sound_name:
-                    #get the playlist, must use 'spotify' for login
-                    playlist = self.sp.user_playlist('spotify',
-                                                    playlist_id=sound_name)
-                    #get a list of the tracks in the playlist
-                    playlist_tracks = playlist['tracks']
+        # if "http://" in sound_name or "https://" in sound_name:
+        #     if "open.spotify.com" in sound_name:
+        #         if "playlist" in sound_name:
+        #             #get the playlist, must use 'spotify' for login
+        #             playlist = self.sp.user_playlist('spotify',
+        #                                             playlist_id=sound_name)
+        #             #get a list of the tracks in the playlist
+        #             playlist_tracks = playlist['tracks']
 
-                    #have to reference each item specifically
-                    playlist_items = playlist_tracks['items']
-                    for item in playlist_items:
-                        #get the track information
-                        track = item['track']
+        #             #have to reference each item specifically
+        #             playlist_items = playlist_tracks['items']
+        #             for item in playlist_items:
+        #                 #get the track information
+        #                 track = item['track']
 
-                        #get the artists information
-                        artists = track['artists']
+        #                 #get the artists information
+        #                 artists = track['artists']
 
-                        #group all the artists names together into a string for
-                        #searching on YouTube
-                        artists_name = ""
-                        for artist in artists:
-                            artists_name += artist['name'] + " "
+        #                 #group all the artists names together into a string for
+        #                 #searching on YouTube
+        #                 artists_name = ""
+        #                 for artist in artists:
+        #                     artists_name += artist['name'] + " "
 
-                        song = await self.create_song_from_source(ctx, artists_name.strip() + track['name'], loop=self.bot.loop)
+        #                 song = await self.create_song_from_source(ctx, artists_name.strip() + track['name'])
 
-                        await ctx.voice_state.songs.put(song)
-        else:
-            song = await self.create_song_from_source(ctx, sound_name)
+        #                 await ctx.voice_state.songs.put(song)
+        # else:
+        song = await self.create_song_from_source(ctx, sound_name)
 
-            await ctx.voice_state.songs.put(song)
+        await ctx.voice_state.songs.put(song)
 
     async def create_song_from_source(self, ctx, sound_name):
         source = await SoundSource.create_source(ctx, sound_name, loop=self.bot.loop)
@@ -233,6 +236,9 @@ def spotipy_setup_client_credentials():
         client_id='d6868e900537402197e3ced73f10a6cf', client_secret='e69173223a6441da9b0ab80c2bc6c777')
     return spotipy.Spotify(
         client_credentials_manager=client_credentials_manager)
+
+def get_response(search: str):
+    pass
 
 
 def setup(bot):

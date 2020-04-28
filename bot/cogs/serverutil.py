@@ -9,7 +9,6 @@ from bot.utils.helper_functions import find_closest_user
 
 import pprint
 
-
 class ServerUtil(Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -18,6 +17,30 @@ class ServerUtil(Cog):
     @command()
     async def kick_user(self, ctx, *, name, reason):
         await self.bot.kick(name, reason=reason)
+
+    @command()
+    async def avatar(self, ctx: Context, *, member: discord.Member = None):
+        """
+        Returns the avatar of the person who called it if no parameters are
+        sent, otherwise returns the avatar of the person mentioned
+        """
+        member = member or ctx.author
+        await ctx.send(member.avatar_url)
+
+    @command()
+    async def avatars(self, ctx: Context, *members):
+        """
+        Returns the avatar of the person who called it if no parameters are
+        sent, otherwise returns the avatar of the person mentioned
+        """
+        if members == None:
+            await ctx.send("No users specified")
+        elif ctx.message.mention_everyone:
+            for i in ctx.guild.members:
+                await ctx.send(i.avatar_url)
+        else:
+            for i in ctx.message.mentions:
+                await ctx.send(i.avatar_url)
 
     @with_roles(MODERATION_ROLES)
     @command()
@@ -46,8 +69,10 @@ class ServerUtil(Cog):
     @command()
     @with_roles(MODERATION_ROLES)
     async def get_server_id(self, ctx):
-        """Returns a server's id. Will return the id of the server from where it
-        is requested."""
+        """
+        Returns a server's id. Will return the id of the server from where it
+        is requested.
+        """
 
         await ctx.channel.send(f"This server's id is {ctx.guild.id}")
 
@@ -65,10 +90,12 @@ class ServerUtil(Cog):
     @with_roles(MODERATION_ROLES)
     @command()
     async def server_purge(self, ctx: Context, server_id1: int, server_id2: int):
-        """Removes all the members from server_id1 that do not exist in
+        """
+        Removes all the members from server_id1 that do not exist in
         server_id2. The bot must be present in both servers for this to
         function. Server ids can be gotten from !get_server_id within the
-        server to get the id."""
+        server to get the id.
+        """
 
         bot_server_list = self.bot.guilds
 

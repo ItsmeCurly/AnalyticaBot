@@ -16,7 +16,7 @@ bot.load_extension('bot.cogs.prefix')
 # bot.load_extension('bot.cogs.basic')
 bot.load_extension('bot.cogs.events')
 # #bot.load_extension('bot.cogs.emoji')
-# bot.load_extension('bot.cogs.serverutil')
+bot.load_extension('bot.cogs.serverutil')
 # bot.load_extension('bot.cogs.cogs')
 bot.load_extension('bot.cogs.music')
 
