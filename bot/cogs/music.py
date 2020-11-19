@@ -16,10 +16,9 @@ import html5lib
 
 from bot.exceptions import AnalyticaError
 
-from bot.utils.video_downloader import Downloader
-
 OPUS_LIBS = ['libopus-0.x86.dll', 'libopus-0.x64.dll',
              'libopus-0.dll', 'libopus.so.0', 'libopus.0.dylib']
+
 
 class SoundSource(discord.PCMVolumeTransformer):
 
@@ -54,7 +53,8 @@ class SoundSource(discord.PCMVolumeTransformer):
     async def create_source(cls, ctx: commands.Context, search: str, *, loop: asyncio.BaseEventLoop = None):
         loop = loop if loop else asyncio.get_event_loop()
 
-        partial = functools.partial(cls.ytdl.extract_info, search, download=False, process=False)
+        partial = functools.partial(
+            cls.ytdl.extract_info, search, download=False, process=False)
 
         data = await loop.run_in_executor(None, partial)
 
@@ -88,8 +88,9 @@ class SongQueue(asyncio.Queue):
         while not self.empty():
             self.get()
 
+
 class VoiceState:
-    def __init__(self, bot: commands.Bot, ctx: commands.Context, *, voice_client = None):
+    def __init__(self, bot: commands.Bot, ctx: commands.Context, *, voice_client=None):
         self.bot = bot
         self.ctx = ctx
 
@@ -115,17 +116,18 @@ class VoiceState:
 
     async def play_audio_player(self):
         """Audio player coroutine. Will play infinitely"""
-        #TODO: Performance measures
+        # TODO: Performance measures
         while True:
-            #set asyncio flag to false for now
+            # set asyncio flag to false for now
             self.next_song.clear()
 
-            #get next song from queue
+            # get next song from queue
             self.current_song = await self.songs.get()
 
             self.current_song.source.volume = self.volume
-            #play next song, queue up next song with play_next_song
-            self.voice_client.play(source=self.current_song.source, after=self.play_next_song)
+            # play next song, queue up next song with play_next_song
+            self.voice_client.play(
+                source=self.current_song.source, after=self.play_next_song)
 
             await self.next_song.wait()
 
@@ -161,7 +163,6 @@ class Music(commands.Cog):
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.voice_state = await self.get_voice_state(ctx)
 
-
     @commands.command()
     async def join(self, ctx: commands.Context):
         if not (author_voice := ctx.author.voice):
@@ -178,6 +179,11 @@ class Music(commands.Cog):
             return await ctx.send("I am not presently in a voice channel")
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
+
+    async def pause(self, ctx: commands.Context):
+        if not ctx.voice_state.voice_client:
+            return await ctx.send("I am not presently in a voice channel")
+        await ctx.voice_state.pause()
 
     @commands.command(aliases=['paly'])
     async def play(self, ctx: commands.Context, sound_name: str):
@@ -218,24 +224,25 @@ class Music(commands.Cog):
 
         return Song(source)
 
+
 def load_opus_lib():
     if opus.is_loaded():
-        return True
+        return
+    try:
+        opus._load_default()
+        return
+    except OSError:
+        pass
+    
+    raise RuntimeError('Could not load an opus lib.')
 
-    for opus_lib in OPUS_LIBS:
-        try:
-            opus.load_opus(opus_lib)
-            return
-        except OSError:
-            pass
-        raise RuntimeError('Could not load an opus lib. Tried %s' %
-                           (', '.join(OPUS_LIBS)))
 
 def spotipy_setup_client_credentials():
     client_credentials_manager = SpotifyClientCredentials(
         client_id='d6868e900537402197e3ced73f10a6cf', client_secret='e69173223a6441da9b0ab80c2bc6c777')
     return spotipy.Spotify(
         client_credentials_manager=client_credentials_manager)
+
 
 def get_response(search: str):
     pass
